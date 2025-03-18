@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "100045417478",
+    "project_id": "easyfinn-b8fca",
+    "storage_bucket": "easyfinn-b8fca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100045417478:android:f909d42a095e48d1652787",
+        "android_client_info": {
+          "package_name": "com.example.advancedandroidcourse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjzz84FgNrlPQBZDTCdoWDjLqhYD29wBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
