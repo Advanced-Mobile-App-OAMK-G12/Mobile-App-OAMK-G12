@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.hilt.android)
+    implementation("androidx.navigation:navigation-compose:2.7.2")
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
     kapt(libs.hilt.compiler)
 
 }
