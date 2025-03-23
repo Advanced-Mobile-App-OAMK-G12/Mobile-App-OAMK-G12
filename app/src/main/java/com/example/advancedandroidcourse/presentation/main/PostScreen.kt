@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.TextField
+import androidx.compose.ui.res.stringResource
+import com.example.advancedandroidcourse.R
 
 @Composable
 fun PostScreen(
@@ -51,7 +53,7 @@ fun PostScreen(
             .padding(16.dp)
     ) {
         IconButton(onClick = onBackClick) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -60,7 +62,7 @@ fun PostScreen(
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
                 model = imageUri ?: "https://via.placeholder.com/80",
-                contentDescription = "Selected Image",
+                contentDescription = stringResource(id = R.string.add),
                 modifier = Modifier
                     .size(80.dp)
                     .background(Color.Gray, RoundedCornerShape(8.dp))
@@ -87,7 +89,7 @@ fun PostScreen(
             value = title,
             onValueChange = { title = it },
             textStyle = TextStyle(fontSize = 18.sp),
-            placeholder = { Text("Write your title here...", color = Color.Gray) },
+            placeholder = { Text(stringResource(id = R.string.write_your_title_here), color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
@@ -101,7 +103,7 @@ fun PostScreen(
             value = content,
             onValueChange = { content = it },
             textStyle = TextStyle(fontSize = 16.sp),
-            placeholder = { Text("What's your tips...", color = Color.Gray) },
+            placeholder = { Text(stringResource(id = R.string.whats_your_tips), color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
@@ -124,13 +126,13 @@ fun PostScreen(
                 IconButton(onClick = { /* save logic */ }) {
                     Icon(
                         imageVector = Icons.Filled.Bookmark,
-                        contentDescription = "Save",
+                        contentDescription = stringResource(id = R.string.save),
                         tint = Color.Gray
                     )
                 }
 
                 Text(
-                    text = "Save",
+                    text = stringResource(id = R.string.save),
                     color = Color.Gray
                 )
             }
@@ -140,7 +142,7 @@ fun PostScreen(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text(text = "POST", color = Color.White)
+                Text(text = stringResource(id = R.string.post), color = Color.White)
             }
         }
     }
