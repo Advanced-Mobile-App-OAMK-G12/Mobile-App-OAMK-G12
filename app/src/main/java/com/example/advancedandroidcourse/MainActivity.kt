@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AdvancedAndroidCourseTheme {
                 val navController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavGraph(navController = navController)
                 }

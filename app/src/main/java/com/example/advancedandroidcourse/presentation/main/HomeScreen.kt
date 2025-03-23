@@ -1,12 +1,15 @@
 package com.example.advancedandroidcourse.presentation.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,14 +19,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.SearchBar
 import com.example.advancedandroidcourse.ui.theme.LogoColor
 
 @Composable
-fun HomeScreen(modifier : Modifier = Modifier){
+fun HomeScreen(modifier : Modifier = Modifier, navController: NavHostController){
     var searchValue by remember { mutableStateOf("")}
+
     Column (
         modifier = modifier
             .fillMaxWidth()
@@ -35,27 +44,17 @@ fun HomeScreen(modifier : Modifier = Modifier){
         Row (
             horizontalArrangement = Arrangement.spacedBy(18.dp)
         ){
-            Column (
-                modifier = modifier
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "easy",
-                    color = LogoColor,
-                    fontSize = 18.sp
-                )
-                Text(
-                    text = "Finn",
-                    color = LogoColor,
-                    fontSize = 18.sp
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "easy Finn Logo",
+                modifier = Modifier.size(80.dp)
+            )
             SearchBar(
                 value = searchValue,
                 onValueChange = { searchValue = it },
-                icon = Icons.Default.Search
+                iconRes = R.drawable.search
             )
         }
+        BottomBar(navController = navController)
     }
 }

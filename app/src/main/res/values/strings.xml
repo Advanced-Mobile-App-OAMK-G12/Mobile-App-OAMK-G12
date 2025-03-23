@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AdvancedAndroidCourse</string>
+    <string name="home">homeScreen</string>
+    <string name="hot">hotScreen</string>
+    <string name="add">postScreen</string>
+    <string name="latest">latestScreen</string>
+    <string name="profile">profileScreen</string>
 </resources>
