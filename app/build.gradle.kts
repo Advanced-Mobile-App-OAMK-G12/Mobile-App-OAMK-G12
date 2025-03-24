@@ -53,9 +53,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation (libs.androidx.material.icons.extended)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.coil.compose)
-    implementation(libs.hilt.navigation.compose) // Lisätty Coil  implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.firebase.auth) // Lisätty Coil
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -66,8 +69,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.hilt.android)
-    implementation("androidx.navigation:navigation-compose:2.7.2")
-    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
     kapt(libs.hilt.compiler)
 
 }

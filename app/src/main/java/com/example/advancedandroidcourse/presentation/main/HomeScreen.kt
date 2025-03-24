@@ -12,8 +12,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,14 +26,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.advancedandroidcourse.presentation.auth.AuthState
+import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
-import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.SearchBar
+import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.ui.theme.LogoColor
 
 @Composable
-fun HomeScreen(modifier : Modifier = Modifier, navController: NavHostController){
+fun HomeScreen(modifier : Modifier = Modifier, navController: NavHostController, authViewModel: AuthViewModel){
+    val authState = authViewModel.authState.observeAsState()
+
+    LaunchedEffect(authState.value) {
+        when(authState.value){
+            is AuthState.Unauthenticated -> navController.navigate("login")
+            else -> Unit
+        }
+    }
+
     var searchValue by remember { mutableStateOf("")}
 
     Column (
@@ -54,6 +68,11 @@ fun HomeScreen(modifier : Modifier = Modifier, navController: NavHostController)
                 onValueChange = { searchValue = it },
                 iconRes = R.drawable.search
             )
+        }
+        TextButton(onClick = {
+            authViewModel.signout()
+        }) {
+            Text(text = "Sign out")
         }
         BottomBar(navController = navController)
     }

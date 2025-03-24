@@ -1,27 +1,37 @@
 package com.example.advancedandroidcourse.navigation
-
 import androidx.compose.runtime.Composable
-import com.example.advancedandroidcourse.presentation.main.PostScreen
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.NavHost
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.main.HomeScreen
-
-//Navigation with Jetpack Navigation Component
-
+import com.example.advancedandroidcourse.presentation.main.PostScreen
+import com.example.advancedandroidcourse.presentation.auth.LoginScreen
+import com.example.advancedandroidcourse.presentation.auth.RegisterScreen
 
 @Composable
-fun NavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "homeScreen") {
-        composable("homeScreen") {
-            HomeScreen(navController = navController)
+fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUserLoggedIn: Boolean) {
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val startDestination = if (isUserLoggedIn) "home" else "login"
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable("login") {
+            LoginScreen(modifier, navController, authViewModel)
         }
-
+        composable("signup") {
+            RegisterScreen(modifier, navController, authViewModel)
+        }
+        composable("home") {
+            HomeScreen(modifier, navController, authViewModel)
+        }
         composable("postScreen") {
             PostScreen(
-                onBackClick = { navController.popBackStack()},
-                onPostClick = { /* post to Firebase Logic */ }
+                onBackClick = { navController.popBackStack() },
+                onPostClick = { /* TODO: implement */ }
             )
         }
     }
 }
+//Navigation with Jetpack Navigation Component
