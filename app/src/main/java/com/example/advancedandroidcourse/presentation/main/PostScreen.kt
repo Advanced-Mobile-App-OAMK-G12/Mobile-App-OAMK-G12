@@ -36,16 +36,19 @@ import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.TextField
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.advancedandroidcourse.R
 
 @Composable
 fun PostScreen(
-    onBackClick: () -> Unit, //Back navigation function
-    onPostClick: () -> Unit //Post action function
+    onBackClick: () -> Unit //Back navigation function
+    //onPostClick: () -> Unit //Post action function
 ) {
+    val postViewModel: PostViewModel = hiltViewModel() //inject ViewModel
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<String?>(null) }
+    var isPosting by remember { mutableStateOf(false) } // Track post status
 
     Column(
         modifier = Modifier
@@ -137,7 +140,16 @@ fun PostScreen(
                 )
             }
             Button(
-                onClick = onPostClick,
+                onClick = {
+                    isPosting = true
+                    postViewModel.createPost(title, content, imageUri) { success ->
+                        isPosting = false
+                        if (success) {
+                            onBackClick()
+                        }
+                    }
+                },
+                enabled = !isPosting, //Disable when posting
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.padding(8.dp)

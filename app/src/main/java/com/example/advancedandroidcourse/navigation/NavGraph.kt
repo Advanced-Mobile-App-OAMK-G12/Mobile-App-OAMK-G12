@@ -11,6 +11,7 @@ import com.example.advancedandroidcourse.presentation.main.HomeScreen
 import com.example.advancedandroidcourse.presentation.main.PostScreen
 import com.example.advancedandroidcourse.presentation.auth.LoginScreen
 import com.example.advancedandroidcourse.presentation.auth.RegisterScreen
+import com.example.advancedandroidcourse.presentation.main.PostViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUserLoggedIn: Boolean) {
@@ -27,9 +28,9 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
             HomeScreen(modifier, navController, authViewModel)
         }
         composable("postScreen") {
+            val postViewModel: PostViewModel = hiltViewModel()
             PostScreen(
-                onBackClick = { navController.popBackStack() },
-                onPostClick = { /* TODO: implement */ }
+                onBackClick = { navController.popBackStack() }
             )
         }
     }
