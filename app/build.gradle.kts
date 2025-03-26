@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
+    //implementation(libs.imagepicker)
+    implementation("com.google.firebase:firebase-storage-ktx")
     kapt(libs.hilt.compiler)
 
 }

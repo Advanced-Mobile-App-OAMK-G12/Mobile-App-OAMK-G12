@@ -1,5 +1,8 @@
 package com.example.advancedandroidcourse.presentation.main
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,8 +50,15 @@ fun PostScreen(
     val postViewModel: PostViewModel = hiltViewModel() //inject ViewModel
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<String?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isPosting by remember { mutableStateOf(false) } // Track post status
+
+    //Create an image picker Launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
+    }
 
     Column(
         modifier = Modifier
@@ -69,7 +79,7 @@ fun PostScreen(
                 modifier = Modifier
                     .size(80.dp)
                     .background(Color.Gray, RoundedCornerShape(8.dp))
-                    .clickable {/* open image picker */ }
+                    .clickable {imagePickerLauncher.launch("image/*") } //open system file picker
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -78,7 +88,7 @@ fun PostScreen(
                 modifier = Modifier
                     .size(80.dp)
                     .background(Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { /* open image picker */ },
+                    .clickable { imagePickerLauncher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
                 Text("+", fontSize = 24.sp, color = Color.DarkGray)
@@ -142,7 +152,7 @@ fun PostScreen(
             Button(
                 onClick = {
                     isPosting = true
-                    postViewModel.createPost(title, content, imageUri) { success ->
+                    postViewModel.createPost(title, content, imageUri?.toString()) { success ->
                         isPosting = false
                         if (success) {
                             onBackClick()
