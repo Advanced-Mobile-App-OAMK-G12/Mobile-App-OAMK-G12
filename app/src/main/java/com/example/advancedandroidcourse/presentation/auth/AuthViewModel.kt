@@ -71,6 +71,7 @@ class AuthViewModel @Inject constructor(
                         "name" to username,
                         "email" to email,
                         "image" to "",
+                        "bio" to "",
                         "banStatus" to hashMapOf(
                             "isBanned" to false,
                             "reason" to "",
