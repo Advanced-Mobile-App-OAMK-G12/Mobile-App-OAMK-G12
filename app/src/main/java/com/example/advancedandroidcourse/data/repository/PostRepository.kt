@@ -8,10 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
-import android.util.Log
 import com.example.advancedandroidcourse.data.model.Post
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -81,10 +78,10 @@ class PostRepository @Inject constructor(
         firestore.collection("tips")
             .add(post)
             .addOnSuccessListener { documentReerence ->
-                Log.d("FirestoreDebug", "Post added with ID: ${documentReerence.id}")
+                //Log.d("FirestoreDebug", "Post added with ID: ${documentReerence.id}")
                 onComplete(true) }
             .addOnFailureListener{ e ->
-                Log.e("FirestoreError", "Error adding post", e)
+               // Log.e("FirestoreError", "Error adding post", e)
                 onComplete(false) }
     }
 
