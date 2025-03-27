@@ -12,6 +12,10 @@ import com.example.advancedandroidcourse.data.model.Post
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -64,15 +68,22 @@ class PostRepository @Inject constructor(
     fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
+       //Get current timestamp
+        val currentTimestamp = System.currentTimeMillis()
+
+        //Convert timestamp to formatted date
+        val sdf = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss z", Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("UTC") // set to UTC
+        val formattedDate = sdf.format(Date(currentTimestamp))
+
         val post = hashMapOf(
             "title" to title,
             "content" to content,
             "images" to (imageUrls ?: emptyList()),//If no images
             "userId" to userId,
-            "userId" to userId,
             "savedCount" to 0,
             "tags" to tags,
-            "timestamp" to System.currentTimeMillis()
+            "timestamp" to formattedDate //Store formatted timestamp
         )
 
         firestore.collection("tips")
