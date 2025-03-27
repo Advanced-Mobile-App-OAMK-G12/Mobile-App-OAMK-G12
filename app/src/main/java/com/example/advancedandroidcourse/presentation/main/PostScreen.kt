@@ -50,14 +50,14 @@ fun PostScreen(
     val postViewModel: PostViewModel = hiltViewModel() //inject ViewModel
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var isPosting by remember { mutableStateOf(false) } // Track post status
 
     //Create an image picker Launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri>? ->
+        imageUris = uris ?: emptyList()
     }
 
     Column(
@@ -65,6 +65,7 @@ fun PostScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        //Back button
         IconButton(onClick = onBackClick) {
             Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
         }
@@ -73,17 +74,19 @@ fun PostScreen(
 
         //Image selection-using placeholder and coil for loading image
         Row(verticalAlignment = Alignment.CenterVertically) {
+            imageUris.take(3).forEach { uri ->
             AsyncImage(
-                model = imageUri ?: "https://via.placeholder.com/80",
+                model = uri,
                 contentDescription = stringResource(id = R.string.add),
                 modifier = Modifier
                     .size(80.dp)
                     .background(Color.Gray, RoundedCornerShape(8.dp))
-                    .clickable {imagePickerLauncher.launch("image/*") } //open system file picker
+                    //.clickable {imagePickerLauncher.launch("image/*") } //open system file picker
             )
 
             Spacer(modifier = Modifier.width(12.dp))
-
+            }
+            //Image picker button
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -127,7 +130,7 @@ fun PostScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         //Save & post Buttons
-        Row(
+        /*Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -148,11 +151,16 @@ fun PostScreen(
                     text = stringResource(id = R.string.save),
                     color = Color.Gray
                 )
-            }
+            }*/
             Button(
                 onClick = {
                     isPosting = true
-                    postViewModel.createPost(title, content, imageUri?.toString()) { success ->
+                    postViewModel.createPost(
+                        title = title,
+                        content = content,
+                        imageUris = imageUris,
+                        tags = emptyList()
+                    ) { success ->
                         isPosting = false
                         if (success) {
                             onBackClick()
@@ -168,4 +176,3 @@ fun PostScreen(
             }
         }
     }
-}
