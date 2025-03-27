@@ -12,6 +12,8 @@ import com.example.advancedandroidcourse.presentation.main.PostScreen
 import com.example.advancedandroidcourse.presentation.auth.LoginScreen
 import com.example.advancedandroidcourse.presentation.auth.RegisterScreen
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
+import com.example.advancedandroidcourse.presentation.profile.EditProfileScreen
+import com.example.advancedandroidcourse.presentation.profile.ProfileScreen
 
 @Composable
 fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUserLoggedIn: Boolean) {
@@ -32,6 +34,12 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
             PostScreen(
                 onBackClick = { navController.popBackStack() }
             )
+        }
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+        composable("editProfile") {
+            EditProfileScreen(navController)
         }
     }
 }
