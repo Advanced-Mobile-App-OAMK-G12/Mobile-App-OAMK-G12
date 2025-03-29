@@ -37,11 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.advancedandroidcourse.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
     onBackClick: () -> Unit //Back navigation function
@@ -59,6 +64,11 @@ fun PostScreen(
     ) { uris: List<Uri>? ->
         imageUris = uris ?: emptyList()
     }
+
+    //Tag selection state
+    val tagOptions = listOf("essentials", "transportation", "official matters", "housing & jobs", "language & integration")
+    var selectedTag by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -129,6 +139,42 @@ fun PostScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        //Dropdown for selecting a tag
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded}
+        ) {
+            TextField(
+                value = selectedTag,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Select a #Tag") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                }
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                tagOptions.forEach { tag ->
+                    DropdownMenuItem(
+                        text = { Text(tag) },
+                        onClick = {
+                            selectedTag = tag
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         //Save & post Buttons
         /*Row(
             modifier = Modifier.fillMaxWidth(),
@@ -152,6 +198,7 @@ fun PostScreen(
                     color = Color.Gray
                 )
             }*/
+            //Post Button
             Button(
                 onClick = {
                     isPosting = true
@@ -159,7 +206,7 @@ fun PostScreen(
                         title = title,
                         content = content,
                         imageUris = imageUris,
-                        tags = emptyList()
+                        tags = listOf(selectedTag)
                     ) { success ->
                         isPosting = false
                         if (success) {
