@@ -3,8 +3,10 @@ package com.example.advancedandroidcourse.presentation.main
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,44 +59,49 @@ fun HomeScreen(
         postViewModel.getPosts()
     }
 
-    Column (
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(start = 6.dp, top = 42.dp),
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 6.dp, top = 42.dp),
 
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(18.dp)
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "easy Finn Logo",
-                modifier = Modifier.size(80.dp)
-            )
-            SearchBar(
-                value = searchValue,
-                onValueChange = { searchValue = it },
-                iconRes = R.drawable.search
-            )
-        }
-
-//        List Posts
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(posts) { post ->
-                PostItem(post = post)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "easy Finn Logo",
+                    modifier = Modifier.size(80.dp)
+                )
+                SearchBar(
+                    value = searchValue,
+                    onValueChange = { searchValue = it },
+                    iconRes = R.drawable.search
+                )
+            }
+
+            //        List Posts
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(posts) { post ->
+                    PostItem(post = post)
+                }
+            }
+
+            //        Sign Out text
+            TextButton(onClick = {
+                authViewModel.signout()
+            }) {
+                Text(text = "Sign out")
             }
         }
-
-//        Sign Out text
-        TextButton(onClick = {
-            authViewModel.signout()
-        }) {
-            Text(text = "Sign out")
-        }
-        BottomBar(navController = navController)
+        BottomBar(
+            navController = navController,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
