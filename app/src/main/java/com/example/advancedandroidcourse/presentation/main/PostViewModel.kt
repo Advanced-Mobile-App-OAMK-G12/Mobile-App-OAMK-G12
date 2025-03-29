@@ -34,14 +34,8 @@ class PostViewModel @Inject constructor(
                 } else {
                     emptyList()
                 }
-                /*if (imageUrls.isNotEmpty()) {
-                    //if image upload successful, create post
-                    postRepository.addPost(title, content, imageUrls,tags, onComplete)
-                } else {
-                    onComplete(false)
-                }
-            } else {*/
-                //if no omage is selected,create post without image
+
+                //if no image is selected,create post without image
                 postRepository.addPost(title, content, imageUrls, tags, onComplete)
             } else {
                 onComplete(false)

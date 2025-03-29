@@ -32,7 +32,7 @@ class PostRepository @Inject constructor(
         return try {
             val imageUrls = mutableListOf<String>()
             for (imageUri in imageUris) {
-                //create a referance to Firebase storage
+                //create a reference to Firebase storage
                 //val storageRef = storage.reference
                 val imageRef =
                     storage.reference.child("images/${UUID.randomUUID()}.jpg") //save as a unique file name
@@ -82,7 +82,7 @@ class PostRepository @Inject constructor(
             "images" to (imageUrls ?: emptyList()),//If no images
             "userId" to userId,
             "savedCount" to 0,
-            "tags" to tags,
+            "tags" to tags, //Store selected tags as an array
             "timestamp" to formattedDate //Store formatted timestamp
         )
 
