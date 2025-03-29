@@ -9,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import com.example.advancedandroidcourse.data.model.Post
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -68,13 +69,9 @@ class PostRepository @Inject constructor(
     fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
-       //Get current timestamp
-        val currentTimestamp = System.currentTimeMillis()
+       //Get current timestamp as a Timestamp object
+        val timestamp = Timestamp(Date())
 
-        //Convert timestamp to formatted date
-        val sdf = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss z", Locale.getDefault())
-        sdf.timeZone = TimeZone.getTimeZone("UTC") // set to UTC
-        val formattedDate = sdf.format(Date(currentTimestamp))
 
         val post = hashMapOf(
             "title" to title,
@@ -83,7 +80,7 @@ class PostRepository @Inject constructor(
             "userId" to userId,
             "savedCount" to 0,
             "tags" to tags, //Store selected tags as an array
-            "timestamp" to formattedDate //Store formatted timestamp
+            "timestamp" to timestamp //Store formatted timestamp
         )
 
         firestore.collection("tips")
