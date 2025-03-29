@@ -13,6 +13,7 @@ fun PostItem(post: Post) {
     Column (
         modifier = Modifier.padding(8.dp)
     ) {
+
         Text(text = post.title)
         Text(text = post.content)
     }

@@ -10,16 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.materialIcon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,17 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.example.advancedandroidcourse.presentation.auth.AuthState
-import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
-import com.example.advancedandroidcourse.presentation.composables.SearchBar
+import com.example.advancedandroidcourse.presentation.auth.AuthState
+import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
-import com.example.advancedandroidcourse.ui.theme.LogoColor
+import com.example.advancedandroidcourse.presentation.composables.SearchBar
 
 @Composable
 fun HomeScreen(

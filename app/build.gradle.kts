@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.firebase.auth) // Lisätty Coil
-    implementation(libs.firebase.storage.ktx)
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
