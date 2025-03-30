@@ -22,6 +22,9 @@ class PostViewModel @Inject constructor(
 //    Save posts fetching from firestore
     private val _posts = MutableStateFlow<List<PostDetails>>(emptyList())
     val posts: StateFlow<List<PostDetails>> get() = _posts
+//    Getting more posts
+    private var lastPostId: String? = null
+    private var isLoading = false
 
     fun createPost(title: String, content: String, imageUris: List<Uri>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
 
@@ -47,11 +50,29 @@ class PostViewModel @Inject constructor(
 //    Fetching data
     fun getPosts() {
         viewModelScope.launch {
-            postRepository.getPosts()
-                .collect { postList ->
-                    Log.d("PostViewModel", "Fetched posts: $postList")
-                    _posts.value = postList
-                }
+            val newPosts = postRepository.getInitialPosts()
+            if (newPosts.isNotEmpty()) {
+                Log.d("PostViewModel", "Fetched posts: $newPosts")
+                lastPostId = newPosts.last().post.id
+            }
+
+            _posts.value = newPosts
+
+        }
+    }
+
+//    Getting more posts
+    fun getMorePosts() {
+        if (isLoading) return
+        isLoading = true
+
+        viewModelScope.launch {
+            val newPosts = postRepository.getMorePosts(lastPostId)
+            if (newPosts.isNotEmpty()) {
+                lastPostId = newPosts.last().post.id
+                _posts.value = _posts.value + newPosts
+            }
+            isLoading = false
         }
     }
 }

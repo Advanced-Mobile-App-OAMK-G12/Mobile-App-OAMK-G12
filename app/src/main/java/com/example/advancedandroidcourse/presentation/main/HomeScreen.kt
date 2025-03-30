@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -56,6 +59,7 @@ fun HomeScreen(
     }
 
     var searchValue by remember { mutableStateOf("")}
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
@@ -88,21 +92,41 @@ fun HomeScreen(
                 )
             }
 
-            //        List Posts
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(posts) { postDetails ->
-                    PostItem(postDetails)
-                }
-            }
-
             //        Sign Out text
             TextButton(onClick = {
                 authViewModel.signout()
             }) {
                 Text(text = "Sign out")
             }
+
+            //        List Posts
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 56.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(posts) { postDetails ->
+                    PostItem(postDetails)
+                }
+
+                item {
+                    LaunchedEffect(posts.size) {
+                        postViewModel.getMorePosts()
+                    }
+                }
+            }
+
+//            LaunchedEffect(listState) {
+//                snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+//                    .collect { lastIndex ->
+//                        if (lastIndex != null && lastIndex >= posts.size - 2) {
+//                            postViewModel.getMorePosts()
+//                        }
+//                    }
+//            }
+
+
         }
         BottomBar(
             navController = navController,

@@ -22,7 +22,7 @@ import javax.inject.Singleton
 class PostRepository @Inject constructor(
    private val firestore: FirebaseFirestore,
    private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+   private val storage: FirebaseStorage
 
 ) {
 
@@ -90,7 +90,7 @@ class PostRepository @Inject constructor(
                 onComplete(false) }
     }
 
-//    Fetching Data
+//    Fetching PostDetails
     fun getPosts(): Flow<List<PostDetails>> = flow {
         try {
             val querySnapshot = firestore.collection("tips").get().await()
@@ -111,5 +111,52 @@ class PostRepository @Inject constructor(
             Log.e("PostRepository", "Error fetching posts: ${e.message}")
             emit(emptyList<PostDetails>())
         }
-}
+    }
+
+//    implement scrolling function in HomeScreen
+    suspend fun getInitialPosts(): List<PostDetails> {
+        try {
+            val querySnapshot = firestore.collection("tips").limit(10).get().await()
+            return querySnapshot.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    userName = user?.name ?: "Unknown",
+                    userAvatar = user?.image ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            return emptyList()
+        }
+    }
+
+//    Fetching more tips
+    suspend fun getMorePosts(lastPostId: String?): List<PostDetails> {
+        try {
+            val querySnapshot = firestore.collection("tips")
+                .startAt(lastPostId)
+                .limit(10)
+                .get()
+                .await()
+
+            return querySnapshot.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    userName = user?.name ?: "Unknown",
+                    userAvatar = user?.image ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            return emptyList()
+        }
+    }
+
+
 }
