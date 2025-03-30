@@ -1,20 +1,28 @@
 package com.example.advancedandroidcourse.presentation.composables
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.advancedandroidcourse.R
 
 @Composable
@@ -36,6 +44,8 @@ fun BottomBar (
         R.drawable.account to profile
     )
 
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -45,20 +55,50 @@ fun BottomBar (
         verticalAlignment = Alignment.CenterVertically
     ) {
         items.forEach{ (icon, description) ->
+
+            val isSelected = currentRoute == description
+            val scale = remember { Animatable(1f) }
+
             IconButton(
                 onClick = {
-                    if (description == add) {
-                        navController.navigate("postScreen")
+                    when (description) {
+                        add -> navController.navigate("postScreen")
+                        profile -> navController.navigate("profile")
+                        home -> navController.navigate("home")
                     }
-                    if (description == profile) {
-                        navController.navigate("profile")
+                },
+                modifier = Modifier
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
                     }
-                    if (description == home) {
-                        navController.navigate("home")
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                scale.animateTo(1.2f)
+                                try {
+                                    this.awaitRelease()
+                                } catch (
+                                    _: Exception
+                                ) {}
+                                scale.animateTo(1f)
+                            }
+                        )
                     }
-                }
+                    .then(
+                        if (isSelected) {
+                            Modifier.border(2.dp,MaterialTheme.colorScheme.primary)
+                        } else {
+                            Modifier
+                        }
+                    )
             ) {
-                Icon(painter = painterResource(id = icon), contentDescription = description)
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = description,
+                    modifier = Modifier
+                        .size(if (isSelected) 32.dp else 28.dp)
+                    )
             }
         }
     }
