@@ -4,6 +4,8 @@ package com.example.advancedandroidcourse.data.repository
 import android.net.Uri
 import android.util.Log
 import com.example.advancedandroidcourse.data.model.Post
+import com.example.advancedandroidcourse.data.model.PostDetails
+import com.example.advancedandroidcourse.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -85,19 +87,25 @@ class PostRepository @Inject constructor(
     }
 
 //    Fetching Data
-    fun getPosts(): Flow<List<Post>> = flow {
+    fun getPosts(): Flow<List<PostDetails>> = flow {
         try {
             val querySnapshot = firestore.collection("tips").get().await()
             Log.d("PostRepository", "Documents size: ${querySnapshot.documents.size}")
-            val posts = querySnapshot.documents.mapNotNull { documentSnapshot ->
-                documentSnapshot.toObject(Post::class.java)
+            val posts = querySnapshot.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    userName = user?.name ?: "Unknown",
+                    userAvatar = user?.image ?: ""
+                )
             }
             emit(posts)
         } catch (e: Exception) {
             Log.e("PostRepository", "Error fetching posts: ${e.message}")
-            emit(emptyList<Post>())
+            emit(emptyList<PostDetails>())
         }
 }
-
-
 }

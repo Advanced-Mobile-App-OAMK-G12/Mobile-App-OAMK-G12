@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.auth.AuthState
@@ -42,7 +44,7 @@ fun HomeScreen(
     postViewModel: PostViewModel = hiltViewModel()
 ){
     val authState = authViewModel.authState.observeAsState()
-    val posts by postViewModel.posts.observeAsState(emptyList())
+    val posts by postViewModel.posts.collectAsState(emptyList())
 
     Log.d("HomeScreen", "Fetched posts: $posts")
 
@@ -87,8 +89,8 @@ fun HomeScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(posts) { post ->
-                    PostItem(post = post)
+                items(posts) { postDetails ->
+                    PostItem(postDetails)
                 }
             }
 
