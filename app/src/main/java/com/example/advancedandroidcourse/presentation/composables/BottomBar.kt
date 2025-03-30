@@ -51,6 +51,12 @@ fun BottomBar (navController: NavHostController) {
                     if (description == add) {
                         navController.navigate("postScreen")
                     }
+                    if (description == profile) {
+                        navController.navigate("profile")
+                    }
+                    if (description == home) {
+                        navController.navigate("home")
+                    }
                 }
             ) {
                 Icon(painter = painterResource(id = icon), contentDescription = description)
