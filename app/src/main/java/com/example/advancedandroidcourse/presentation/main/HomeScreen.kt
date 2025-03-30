@@ -81,7 +81,10 @@ fun HomeScreen(
                 SearchBar(
                     value = searchValue,
                     onValueChange = { searchValue = it },
-                    iconRes = R.drawable.search
+                    iconRes = R.drawable.search,
+                    onSearchClick = {
+                        navController.navigate("search")
+                    }
                 )
             }
 

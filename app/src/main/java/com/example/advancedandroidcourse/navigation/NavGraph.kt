@@ -14,6 +14,7 @@ import com.example.advancedandroidcourse.presentation.auth.RegisterScreen
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
 import com.example.advancedandroidcourse.presentation.profile.EditProfileScreen
 import com.example.advancedandroidcourse.presentation.profile.ProfileScreen
+import com.example.advancedandroidcourse.presentation.search.SearchScreen
 
 @Composable
 fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUserLoggedIn: Boolean) {
@@ -40,6 +41,9 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
         }
         composable("editProfile") {
             EditProfileScreen(navController)
+        }
+        composable("search") {
+            SearchScreen(navController)
         }
     }
 }
