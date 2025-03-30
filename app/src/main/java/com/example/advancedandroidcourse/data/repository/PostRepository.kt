@@ -75,7 +75,6 @@ class PostRepository @Inject constructor(
             "content" to content,
             "images" to (imageUrls ?: emptyList()),//If no images
             "userId" to userId,
-            "userId" to userId,
             "savedCount" to 0,
             "tags" to tags,
             "timestamp" to timestamp
