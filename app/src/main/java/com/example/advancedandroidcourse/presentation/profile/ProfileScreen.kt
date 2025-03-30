@@ -1,10 +1,14 @@
 package com.example.advancedandroidcourse.presentation.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PostAdd
@@ -34,6 +38,12 @@ fun ProfileScreen(
     val favorites by viewModel.favoriteTips.collectAsState()
     val posts by viewModel.postedTips.collectAsState()
     var selectedTab by remember { mutableStateOf("favorites") }
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.uploadProfileImage(it) }
+    }
 
     Scaffold(
         bottomBar = { BottomBar(navController) }
@@ -48,19 +58,40 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Profile Image
-            Box(contentAlignment = Alignment.BottomEnd) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(user?.image ?: "")
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Profile Image",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+            Box(
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .clickable { launcher.launch("image/*") }
+            ) {
+                if (!user?.image.isNullOrBlank()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(user?.image)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Profile Image",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add, // or Icons.Default.Add
+                            contentDescription = "Add Image"
+                        )
+                    }
+                }
             }
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
