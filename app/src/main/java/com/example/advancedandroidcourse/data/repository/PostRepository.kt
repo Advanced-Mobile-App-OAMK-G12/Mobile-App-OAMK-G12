@@ -6,12 +6,14 @@ import android.util.Log
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.model.User
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -65,6 +67,9 @@ class PostRepository @Inject constructor(
     fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
+    //Get current timestamp as a Timestamp object
+        val timestamp = Timestamp(Date())
+
         val post = hashMapOf(
             "title" to title,
             "content" to content,
@@ -73,7 +78,7 @@ class PostRepository @Inject constructor(
             "userId" to userId,
             "savedCount" to 0,
             "tags" to tags,
-            "timestamp" to System.currentTimeMillis()
+            "timestamp" to timestamp
         )
 
         firestore.collection("tips")
