@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.repository.PostRepository
+import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,10 +23,14 @@ class PostViewModel @Inject constructor(
 
 //    Save posts fetching from firestore
     private val _posts = MutableStateFlow<List<PostDetails>>(emptyList())
-    val posts: StateFlow<List<PostDetails>> get() = _posts
+    val posts: StateFlow<List<PostDetails>> = _posts.asStateFlow()
 //    Getting more posts
-    private var lastPostId: String? = null
+    private var lastTimestamp: Timestamp? = null
     private var isLoading = false
+
+    init {
+        getInitialPosts()
+    }
 
     fun createPost(title: String, content: String, imageUris: List<Uri>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
 
@@ -50,15 +56,24 @@ class PostViewModel @Inject constructor(
 //    Fetching data
     fun getPosts() {
         viewModelScope.launch {
+            postRepository.getPosts()
+                .collect { postList ->
+                    Log.d("PostViewModel", "Fetched posts: $postList")
+                    _posts.value = postList
+                }
+        }
+    }
+
+//    Initial Posts
+    fun getInitialPosts() {
+        viewModelScope.launch {
             val newPosts = postRepository.getInitialPosts()
             if (newPosts.isNotEmpty()) {
-                Log.d("PostViewModel", "Fetched posts: $newPosts")
-                lastPostId = newPosts.last().post.id
+                lastTimestamp = newPosts.last().post.timestamp
+                _posts.value = newPosts
             }
-
-            _posts.value = newPosts
-
         }
+
     }
 
 //    Getting more posts
@@ -67,10 +82,10 @@ class PostViewModel @Inject constructor(
         isLoading = true
 
         viewModelScope.launch {
-            val newPosts = postRepository.getMorePosts(lastPostId)
+            val newPosts = postRepository.getMorePosts(lastTimestamp)
             if (newPosts.isNotEmpty()) {
-                lastPostId = newPosts.last().post.id
-                _posts.value = _posts.value + newPosts
+                lastTimestamp = newPosts.last().post.timestamp
+                _posts.value += newPosts
             }
             isLoading = false
         }

@@ -9,6 +9,7 @@ import com.example.advancedandroidcourse.data.model.User
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -115,34 +116,14 @@ class PostRepository @Inject constructor(
 
 //    implement scrolling function in HomeScreen
     suspend fun getInitialPosts(): List<PostDetails> {
-        try {
-            val querySnapshot = firestore.collection("tips").limit(10).get().await()
-            return querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
-                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
-                val user = userSnapshot.toObject(User::class.java)
-
-                PostDetails(
-                    post = post,
-                    userName = user?.name ?: "Unknown",
-                    userAvatar = user?.image ?: ""
-                )
-            }
-        } catch (e: Exception) {
-            return emptyList()
-        }
-    }
-
-//    Fetching more tips
-    suspend fun getMorePosts(lastPostId: String?): List<PostDetails> {
-        try {
+        return try {
             val querySnapshot = firestore.collection("tips")
-                .startAt(lastPostId)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(10)
                 .get()
                 .await()
 
-            return querySnapshot.documents.mapNotNull { document ->
+            querySnapshot.documents.mapNotNull { document ->
                 val post = document.toObject(Post::class.java) ?: return@mapNotNull null
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
@@ -154,7 +135,40 @@ class PostRepository @Inject constructor(
                 )
             }
         } catch (e: Exception) {
-            return emptyList()
+            Log.e("PostRepository", "Error fetching initial posts", e)
+            emptyList()
+        }
+    }
+
+//    Fetching more tips
+    suspend fun getMorePosts(lastTimestamp: Timestamp?): List<PostDetails> {
+        return try {
+            Log.d("PostRepository", "Fetching tips after: $lastTimestamp")
+
+            val query = firestore.collection("tips")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+
+            val finalQuery = lastTimestamp?.let {
+                query.startAfter(it)
+            } ?: query
+
+            val querySnapshot = finalQuery.limit(10).get().await()
+            Log.d("PostRepository", "Fetched ${querySnapshot.documents.size} new posts")
+
+            querySnapshot.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    userName = user?.name ?: "Unknown",
+                    userAvatar = user?.image ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error fetching more posts", e)
+            emptyList()
         }
     }
 

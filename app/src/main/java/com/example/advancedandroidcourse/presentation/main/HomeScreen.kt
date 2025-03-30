@@ -47,9 +47,7 @@ fun HomeScreen(
     postViewModel: PostViewModel = hiltViewModel()
 ){
     val authState = authViewModel.authState.observeAsState()
-    val posts by postViewModel.posts.collectAsState(emptyList())
 
-    Log.d("HomeScreen", "Fetched posts: $posts")
 
     LaunchedEffect(authState.value) {
         when(authState.value){
@@ -58,8 +56,10 @@ fun HomeScreen(
         }
     }
 
-    var searchValue by remember { mutableStateOf("")}
+    val posts by postViewModel.posts.collectAsState(emptyList())
     val listState = rememberLazyListState()
+
+    var searchValue by remember { mutableStateOf("")}
 
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
@@ -98,8 +98,8 @@ fun HomeScreen(
 
             //        List Posts
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                state = listState,
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 56.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -108,21 +108,14 @@ fun HomeScreen(
                 }
 
                 item {
-                    LaunchedEffect(posts.size) {
-                        postViewModel.getMorePosts()
+                    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.size) {
+                        if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == posts.size - 1) {
+                            postViewModel.getMorePosts()
+                        }
                     }
                 }
+
             }
-
-//            LaunchedEffect(listState) {
-//                snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-//                    .collect { lastIndex ->
-//                        if (lastIndex != null && lastIndex >= posts.size - 2) {
-//                            postViewModel.getMorePosts()
-//                        }
-//                    }
-//            }
-
 
         }
         BottomBar(
