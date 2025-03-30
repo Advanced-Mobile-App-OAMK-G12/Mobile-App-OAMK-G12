@@ -10,14 +10,15 @@ import androidx.compose.ui.res.painterResource
 fun SearchBar(
     iconRes: Int,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    onSearchClick: () -> Unit
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         trailingIcon = {
             IconButton(
-                onClick = {}
+                onClick = onSearchClick
             ) {
                 Icon(painter = painterResource(id = iconRes), contentDescription = "Search Icon")
             }
