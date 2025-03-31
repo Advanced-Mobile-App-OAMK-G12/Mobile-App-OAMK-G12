@@ -56,11 +56,17 @@ fun HomeScreen(
         }
     }
 
+//    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
     val listState = rememberLazyListState()
 
     var searchValue by remember { mutableStateOf("")}
 
+    LaunchedEffect(posts) {
+        Log.d("HomeScreen", "LaunchedEffect posts size: ${posts.size}")
+    }
+
+//    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
     }
@@ -106,15 +112,27 @@ fun HomeScreen(
                 contentPadding = PaddingValues(bottom = 56.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(posts) { postDetails ->
-                    PostItem(postDetails)
+                if (posts.isNotEmpty()) {
+                    items(posts) { postDetails ->
+                        PostItem(postDetails)
+                    }
+                } else {
+                    item {
+                        Text(text = "No posts available.")  // 当没有帖子时显示一个提示
+                    }
                 }
 
+
                 item {
-                    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.size) {
-                        if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == posts.size - 1) {
-                            postViewModel.getMorePosts()
-                        }
+                    LaunchedEffect(posts.size) {
+                        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                            .collect { lastVisibleIndex ->
+                                Log.d("HomeScreen", "HomeScreen Last visible index: $lastVisibleIndex, Posts size: ${posts.size}")
+                                if (lastVisibleIndex == posts.size - 3) {
+                                    postViewModel.getPosts()
+                                    Log.d("HomeScreen", "HomeScreen Triggered getMorePosts()")
+                                }
+                            }
                     }
                 }
 

@@ -26,7 +26,7 @@ class PostViewModel @Inject constructor(
     val posts: StateFlow<List<PostDetails>> = _posts.asStateFlow()
 //    Getting more posts
     private var lastTimestamp: Timestamp? = null
-    private var isLoading = false
+//    private var isLoading = false
 
     init {
         getInitialPosts()
@@ -53,41 +53,70 @@ class PostViewModel @Inject constructor(
         }
     }
 
-//    Fetching data
-    fun getPosts() {
-        viewModelScope.launch {
-            postRepository.getPosts()
-                .collect { postList ->
-                    Log.d("PostViewModel", "Fetched posts: $postList")
-                    _posts.value = postList
-                }
-        }
-    }
 
 //    Initial Posts
     fun getInitialPosts() {
         viewModelScope.launch {
-            val newPosts = postRepository.getInitialPosts()
-            if (newPosts.isNotEmpty()) {
-                lastTimestamp = newPosts.last().post.timestamp
-                _posts.value = newPosts
+            try {
+                val newPosts = postRepository.getInitialPosts()
+                if (newPosts.isNotEmpty()) {
+                    lastTimestamp = newPosts.last().post.timestamp
+                    Log.d("PostViewModel", "PostViewModel Fetched initial posts: ${newPosts.size}")
+                    _posts.value = newPosts
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "PostViewModel Error fetching initial posts", e)
             }
         }
 
     }
 
-//    Getting more posts
-    fun getMorePosts() {
-        if (isLoading) return
-        isLoading = true
+    //    Fetching data
+    fun getPosts() {
+        Log.d("PostViewModel", "Calling getPosts()")
+        // If lastTimestamp is null, it means we need to load initial posts
+        if (lastTimestamp == null) {
+            getInitialPosts()
+            return
+        }
 
         viewModelScope.launch {
-            val newPosts = postRepository.getMorePosts(lastTimestamp)
-            if (newPosts.isNotEmpty()) {
-                lastTimestamp = newPosts.last().post.timestamp
-                _posts.value += newPosts
+            try {
+                val morePosts = postRepository.getPosts(lastTimestamp!!)
+                Log.d("PostViewModel", "Fetched more posts: ${morePosts.size}")
+
+                if (morePosts.isNotEmpty()) {
+                    lastTimestamp = morePosts.last().post.timestamp
+                    _posts.value = _posts.value + morePosts
+                } else {
+                    Log.d("PostViewModel", "No more posts available.")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Error fetching more posts", e)
             }
-            isLoading = false
         }
     }
 }
+
+//    Getting more posts
+//    fun getMorePosts() {
+//        if (isLoading) return
+//        isLoading = true
+//
+//        viewModelScope.launch {
+//            val lastTimestamp = _posts.value.lastOrNull()?.post?.timestamp
+//            Log.d("PostViewModel", "PostViewModel getMorePosts() called. Last timestamp: $lastTimestamp")
+//            try {
+//                val morePosts = postRepository.getMorePosts(lastTimestamp)
+//                Log.d("PostViewModel", "PostViewModel More posts fetched: ${morePosts.size}")
+//
+//                if (morePosts.isNotEmpty()) {
+//                    _posts.value = _posts.value + morePosts
+//                    Log.d("PostViewModel", "PostViewModel Total posts after update: ${_posts.value.size}")
+//                }
+//            } catch (e: Exception) {
+//                Log.e("PostViewModel", "PostViewModel Error fetching more posts", e)
+//            }
+//        }
+//    }
+//}

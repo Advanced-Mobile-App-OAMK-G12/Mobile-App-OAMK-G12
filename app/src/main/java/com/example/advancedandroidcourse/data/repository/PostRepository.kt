@@ -83,35 +83,12 @@ class PostRepository @Inject constructor(
 
         firestore.collection("tips")
             .add(post)
-            .addOnSuccessListener { documentReerence ->
-                Log.d("FirestoreDebug", "Post added with ID: ${documentReerence.id}")
+            .addOnSuccessListener { documentReference ->
+                Log.d("FirestoreDebug", "Post added with ID: ${documentReference.id}")
                 onComplete(true) }
             .addOnFailureListener{ e ->
                 Log.e("FirestoreError", "Error adding post", e)
                 onComplete(false) }
-    }
-
-//    Fetching PostDetails
-    fun getPosts(): Flow<List<PostDetails>> = flow {
-        try {
-            val querySnapshot = firestore.collection("tips").get().await()
-            Log.d("PostRepository", "Documents size: ${querySnapshot.documents.size}")
-            val posts = querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
-                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
-                val user = userSnapshot.toObject(User::class.java)
-
-                PostDetails(
-                    post = post,
-                    userName = user?.name ?: "Unknown",
-                    userAvatar = user?.image ?: ""
-                )
-            }
-            emit(posts)
-        } catch (e: Exception) {
-            Log.e("PostRepository", "Error fetching posts: ${e.message}")
-            emit(emptyList<PostDetails>())
-        }
     }
 
 //    implement scrolling function in HomeScreen
@@ -123,6 +100,8 @@ class PostRepository @Inject constructor(
                 .get()
                 .await()
 
+            Log.d("PostRepository", "PostRepository Get Initial posts: ${querySnapshot.documents.size}")
+
             querySnapshot.documents.mapNotNull { document ->
                 val post = document.toObject(Post::class.java) ?: return@mapNotNull null
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
@@ -135,42 +114,75 @@ class PostRepository @Inject constructor(
                 )
             }
         } catch (e: Exception) {
-            Log.e("PostRepository", "Error fetching initial posts", e)
+            Log.e("PostRepository", "PostRepository Error fetching initial posts", e)
+            emptyList()
+        }
+    }
+
+
+    //    Fetching PostDetails
+    suspend fun getPosts(lastTimestamp: Timestamp): List<PostDetails> {
+        Log.d("PostRepository", "PostRepository Last timestamp: $lastTimestamp")
+
+        return try {
+            val querySnapshot = firestore.collection("tips")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .startAfter(lastTimestamp)
+                .limit(10)
+                .get()
+                .await()
+
+            Log.d("PostRepository", "PostRepository Documents size: ${querySnapshot.documents.size}")
+
+            querySnapshot.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                Log.d("PostRepository", "PostRepository Post timestamp: ${post?.timestamp}")
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    userName = user?.name ?: "Unknown",
+                    userAvatar = user?.image ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("PostRepository", "PostRepository Error fetching posts: ${e.message}")
             emptyList()
         }
     }
 
 //    Fetching more tips
-    suspend fun getMorePosts(lastTimestamp: Timestamp?): List<PostDetails> {
-        return try {
-            Log.d("PostRepository", "Fetching tips after: $lastTimestamp")
-
-            val query = firestore.collection("tips")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-
-            val finalQuery = lastTimestamp?.let {
-                query.startAfter(it)
-            } ?: query
-
-            val querySnapshot = finalQuery.limit(10).get().await()
-            Log.d("PostRepository", "Fetched ${querySnapshot.documents.size} new posts")
-
-            querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
-                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
-                val user = userSnapshot.toObject(User::class.java)
-
-                PostDetails(
-                    post = post,
-                    userName = user?.name ?: "Unknown",
-                    userAvatar = user?.image ?: ""
-                )
-            }
-        } catch (e: Exception) {
-            Log.e("PostRepository", "Error fetching more posts", e)
-            emptyList()
-        }
-    }
+//    suspend fun getMorePosts(lastTimestamp: Timestamp?): List<PostDetails> {
+//        return try {
+//            Log.d("PostRepository", "PostRepository Fetching tips after: $lastTimestamp")
+//
+//            val query = firestore.collection("tips")
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//
+//            val finalQuery = lastTimestamp?.let {
+//                query.startAfter(it)
+//            } ?: query
+//
+//            val querySnapshot = finalQuery.limit(10).get().await()
+//            Log.d("PostRepository", "PostRepository Fetched more posts ${querySnapshot.documents.size} new posts")
+//
+//            querySnapshot.documents.mapNotNull { document ->
+//                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+//                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+//                val user = userSnapshot.toObject(User::class.java)
+//
+//                PostDetails(
+//                    post = post,
+//                    userName = user?.name ?: "Unknown",
+//                    userAvatar = user?.image ?: ""
+//                )
+//            }
+//        } catch (e: Exception) {
+//            Log.e("PostRepository", "PostRepository Error fetching more posts", e)
+//            emptyList()
+//        }
+//    }
 
 
 }
