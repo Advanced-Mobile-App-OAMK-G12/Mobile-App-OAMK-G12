@@ -37,7 +37,7 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
             )
         }
         composable("profile") {
-            ProfileScreen(navController)
+            ProfileScreen(navController,authViewModel = authViewModel)
         }
         composable("editProfile") {
             EditProfileScreen(navController)
