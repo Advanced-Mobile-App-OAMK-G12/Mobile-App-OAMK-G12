@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.auth.AuthState
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
+import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.composables.SearchBar
 
@@ -61,9 +64,6 @@ fun HomeScreen(
 
     var searchValue by remember { mutableStateOf("")}
 
-    LaunchedEffect(posts) {
-        Log.d("HomeScreen", "LaunchedEffect posts size: ${posts.size}")
-    }
 
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
@@ -111,27 +111,19 @@ fun HomeScreen(
                 contentPadding = PaddingValues(bottom = 56.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (posts.isNotEmpty()) {
-                    items(posts) { postDetails ->
-                        PostItem(postDetails)
-                    }
-                } else {
-                    item {
-                        Text(text = "No posts available.")  // 当没有帖子时显示一个提示
-                    }
-                }
-
-                item {
-                    LaunchedEffect(posts.size) {
-                        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-                            .collect { lastVisibleIndex ->
-                                Log.d("HomeScreen", "HomeScreen Last visible index: $lastVisibleIndex, Posts size: ${posts.size}")
-                                if (lastVisibleIndex == posts.size - 3) {
-                                    postViewModel.getPosts()
-                                    Log.d("HomeScreen", "HomeScreen Triggered getMorePosts()")
-                                }
+                items(posts) { postDetails ->
+                    PostItem(
+                        postDetails = postDetails,
+                        buttonContent = { modifier ->
+                            IconButton(
+                                onClick = {},
+                                modifier = modifier
+                            ) {
+                                FavoriteIcon()
                             }
-                    }
+                        },
+                        showAuthorInfo = true
+                    )
                 }
             }
         }

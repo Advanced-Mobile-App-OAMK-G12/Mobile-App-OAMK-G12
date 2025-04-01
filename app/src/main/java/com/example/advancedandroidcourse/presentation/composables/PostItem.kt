@@ -25,7 +25,11 @@ import com.example.advancedandroidcourse.data.model.PostDetails
 import java.nio.file.WatchEvent
 
 @Composable
-fun PostItem(postDetails: PostDetails) {
+fun PostItem(
+    postDetails: PostDetails,
+    buttonContent: @Composable (Modifier) -> Unit,
+    showAuthorInfo: Boolean
+) {
     Column (
         modifier = Modifier.padding(8.dp)
     ) {
@@ -38,26 +42,20 @@ fun PostItem(postDetails: PostDetails) {
                     .height(200.dp)
                     .clip(RoundedCornerShape(8.dp))
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(text = postDetails.post.title)
             Text(text = postDetails.post.content)
         }
 
 //  Display author's information
-        Row (
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = rememberImagePainter(postDetails.userAvatar),
-                contentDescription = "User Avatar",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
+        if (showAuthorInfo) {
+            AuthorInfo(
+                userAvatar = postDetails.userAvatar,
+                userName = postDetails.userName,
+                buttonContent = buttonContent
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = postDetails.userName, fontWeight = FontWeight.Bold)
-
         }
-        Spacer(modifier = Modifier.height(8.dp))
 
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
