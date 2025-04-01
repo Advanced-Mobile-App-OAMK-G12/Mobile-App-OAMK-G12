@@ -97,26 +97,3 @@ class PostViewModel @Inject constructor(
         }
     }
 }
-
-//    Getting more posts
-//    fun getMorePosts() {
-//        if (isLoading) return
-//        isLoading = true
-//
-//        viewModelScope.launch {
-//            val lastTimestamp = _posts.value.lastOrNull()?.post?.timestamp
-//            Log.d("PostViewModel", "PostViewModel getMorePosts() called. Last timestamp: $lastTimestamp")
-//            try {
-//                val morePosts = postRepository.getMorePosts(lastTimestamp)
-//                Log.d("PostViewModel", "PostViewModel More posts fetched: ${morePosts.size}")
-//
-//                if (morePosts.isNotEmpty()) {
-//                    _posts.value = _posts.value + morePosts
-//                    Log.d("PostViewModel", "PostViewModel Total posts after update: ${_posts.value.size}")
-//                }
-//            } catch (e: Exception) {
-//                Log.e("PostViewModel", "PostViewModel Error fetching more posts", e)
-//            }
-//        }
-//    }
-//}
