@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.auth.AuthState
@@ -122,7 +121,6 @@ fun HomeScreen(
                     }
                 }
 
-
                 item {
                     LaunchedEffect(posts.size) {
                         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
@@ -135,9 +133,7 @@ fun HomeScreen(
                             }
                     }
                 }
-
             }
-
         }
         BottomBar(
             navController = navController,

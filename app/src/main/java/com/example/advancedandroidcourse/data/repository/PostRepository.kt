@@ -11,8 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import java.util.UUID
@@ -151,38 +149,4 @@ class PostRepository @Inject constructor(
             emptyList()
         }
     }
-
-//    Fetching more tips
-//    suspend fun getMorePosts(lastTimestamp: Timestamp?): List<PostDetails> {
-//        return try {
-//            Log.d("PostRepository", "PostRepository Fetching tips after: $lastTimestamp")
-//
-//            val query = firestore.collection("tips")
-//                .orderBy("timestamp", Query.Direction.DESCENDING)
-//
-//            val finalQuery = lastTimestamp?.let {
-//                query.startAfter(it)
-//            } ?: query
-//
-//            val querySnapshot = finalQuery.limit(10).get().await()
-//            Log.d("PostRepository", "PostRepository Fetched more posts ${querySnapshot.documents.size} new posts")
-//
-//            querySnapshot.documents.mapNotNull { document ->
-//                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
-//                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
-//                val user = userSnapshot.toObject(User::class.java)
-//
-//                PostDetails(
-//                    post = post,
-//                    userName = user?.name ?: "Unknown",
-//                    userAvatar = user?.image ?: ""
-//                )
-//            }
-//        } catch (e: Exception) {
-//            Log.e("PostRepository", "PostRepository Error fetching more posts", e)
-//            emptyList()
-//        }
-//    }
-
-
 }
