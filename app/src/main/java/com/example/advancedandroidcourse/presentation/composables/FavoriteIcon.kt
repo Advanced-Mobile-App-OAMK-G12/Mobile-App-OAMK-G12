@@ -1,6 +1,8 @@
 package com.example.advancedandroidcourse.presentation.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.unit.dp
@@ -12,15 +14,18 @@ import com.example.advancedandroidcourse.R
 
 
 @Composable
-fun FavoriteIcon(modifier: Modifier = Modifier) {
-    val favoriteIconPainter = painterResource(id = R.drawable.save)
+fun FavoriteIcon(
+    modifier: Modifier = Modifier,
+    isSaved: Boolean,
+    onToggleSaved: () -> Unit
+) {
 
     IconButton(
-        onClick = { },
+        onClick = onToggleSaved,
         modifier = Modifier.size(24.dp)
     ) {
         Icon(
-            painter = favoriteIconPainter,
+            painter = painterResource(id = if (isSaved) R.drawable.save_filled else R.drawable.save),
             contentDescription = "Save",
             tint = Color.Red
         )

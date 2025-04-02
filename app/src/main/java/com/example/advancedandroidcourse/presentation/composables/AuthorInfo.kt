@@ -20,7 +20,8 @@ import coil.compose.rememberImagePainter
 fun AuthorInfo(
     userAvatar: String,
     userName: String,
-    buttonContent: @Composable (Modifier) -> Unit
+    isSaved: Boolean,
+    onToggleSaved: () -> Unit
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -38,6 +39,6 @@ fun AuthorInfo(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        buttonContent(Modifier)
+        FavoriteIcon(Modifier, isSaved, onToggleSaved)
     }
 }

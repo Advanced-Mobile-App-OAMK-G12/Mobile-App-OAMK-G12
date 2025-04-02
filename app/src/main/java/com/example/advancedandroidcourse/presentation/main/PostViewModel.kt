@@ -3,6 +3,9 @@ package com.example.advancedandroidcourse.presentation.main
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.advancedandroidcourse.data.model.PostDetails
@@ -93,6 +96,22 @@ class PostViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("PostViewModel", "Error fetching more posts", e)
+            }
+        }
+    }
+
+//    Update savedCount
+    private val _postList = mutableStateListOf<PostDetails>()
+    val postList: List<PostDetails> = _postList
+
+    fun updateSavedCount(tipId: String, newSavedCount: Int) {
+        Log.d("PostViewModel", "PostViewModel Updating saved count for post ID: $tipId with new value: $newSavedCount")
+        postRepository.updateSavedCount(tipId, newSavedCount) { success ->
+            if (success) {
+                _postList.find { it.post.id == tipId }?.post?.savedCount = newSavedCount
+                Log.d("SavedCount", "PostViewModel Saved count updated successfully")
+            } else {
+                Log.e("SavedCount", "PostViewModel Error updating saved count")
             }
         }
     }

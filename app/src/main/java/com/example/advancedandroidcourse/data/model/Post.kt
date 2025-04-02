@@ -7,7 +7,7 @@ data class Post(
     val title: String = "",
     val content: String = "",
     val images: List<String> = emptyList(),
-    val savedCount: Int = 0,
+    var savedCount: Int = 0,
     val tags: List<String> = emptyList(),
     val timestamp: Timestamp? = null,
     val userId: String = ""

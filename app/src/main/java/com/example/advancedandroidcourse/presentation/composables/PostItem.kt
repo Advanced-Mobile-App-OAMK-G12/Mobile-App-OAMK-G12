@@ -14,6 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,14 +26,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
+import com.example.advancedandroidcourse.presentation.main.PostViewModel
 import java.nio.file.WatchEvent
 
 @Composable
 fun PostItem(
     postDetails: PostDetails,
-    buttonContent: @Composable (Modifier) -> Unit,
-    showAuthorInfo: Boolean
+    showAuthorInfo: Boolean,
+    onToggleSaved: () -> Unit
 ) {
+
     Column (
         modifier = Modifier.padding(8.dp)
     ) {
@@ -52,7 +58,8 @@ fun PostItem(
             AuthorInfo(
                 userAvatar = postDetails.userAvatar,
                 userName = postDetails.userName,
-                buttonContent = buttonContent
+                isSaved = postDetails.post.savedCount > 0,
+                onToggleSaved = onToggleSaved
             )
         }
 

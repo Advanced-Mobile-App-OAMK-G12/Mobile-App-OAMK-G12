@@ -101,7 +101,8 @@ class PostRepository @Inject constructor(
             Log.d("PostRepository", "PostRepository Get Initial posts: ${querySnapshot.documents.size}")
 
             querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
+                val post = document.toObject(Post::class.java)?.copy(id = document.id)
+                    ?: return@mapNotNull null
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
 
@@ -133,8 +134,9 @@ class PostRepository @Inject constructor(
             Log.d("PostRepository", "PostRepository Documents size: ${querySnapshot.documents.size}")
 
             querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java) ?: return@mapNotNull null
-                Log.d("PostRepository", "PostRepository Post timestamp: ${post?.timestamp}")
+                val post = document.toObject(Post::class.java)?.copy(id = document.id)
+                    ?: return@mapNotNull null
+                Log.d("PostRepository", "PostRepository Post timestamp: ${post.timestamp}")
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
 
@@ -149,4 +151,19 @@ class PostRepository @Inject constructor(
             emptyList()
         }
     }
+
+    fun updateSavedCount(tipId: String, newSavedCount: Int, onComplete: (Boolean) -> Unit) {
+        val postsRef = firestore.collection("tips").document(tipId)
+        Log.d("PostRepository", "Updating saved count for post ID: $tipId")
+
+        postsRef.update("savedCount", newSavedCount)
+            .addOnSuccessListener {
+                onComplete(true)
+            }
+            .addOnFailureListener { exception ->
+                onComplete(false)
+                Log.e("FirebaseError", "Error updating saved count", exception)
+            }
+    }
+
 }

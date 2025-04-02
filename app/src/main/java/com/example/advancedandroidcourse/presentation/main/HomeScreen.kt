@@ -32,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.presentation.auth.AuthState
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
@@ -95,15 +97,16 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(posts) { postDetails ->
+                    val isSaved = postDetails.post.savedCount > 0
                     PostItem(
                         postDetails = postDetails,
-                        buttonContent = { modifier ->
-                            IconButton(
-                                onClick = {},
-                                modifier = modifier
-                            ) {
-                                FavoriteIcon()
-                            }
+                        onToggleSaved = {
+                            Log.d("HomeScreen", "HomeScreen Save button clicked for post ID: ${postDetails.post.id}")
+                            Log.d("HomeScreen", "PostDetails: ${postDetails}")
+                            val newSavedCount = if (isSaved) postDetails.post.savedCount - 1
+                                else postDetails.post.savedCount + 1
+
+                            postViewModel.updateSavedCount(postDetails.post.id, newSavedCount)
                         },
                         showAuthorInfo = true
                     )
