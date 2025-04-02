@@ -32,7 +32,11 @@ class SearchRepository @Inject constructor() {
                 .get()
                 .await()
                 .documents
-                .map { it.getString("title") ?: ""}
+                .mapNotNull { doc ->
+                    val title = doc.getString("title") ?: ""
+                    val savedCount = doc.getLong("savedCount") ?: 0
+                    if (savedCount > 0) title else null
+                }
         } catch (e: Exception) {
             emptyList()
         }
