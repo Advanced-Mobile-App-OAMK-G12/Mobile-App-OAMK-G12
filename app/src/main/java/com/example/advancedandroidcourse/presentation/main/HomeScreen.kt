@@ -45,18 +45,8 @@ import com.example.advancedandroidcourse.presentation.composables.SearchBar
 fun HomeScreen(
     modifier : Modifier = Modifier,
     navController: NavHostController,
-    authViewModel: AuthViewModel,
     postViewModel: PostViewModel = hiltViewModel()
 ){
-    val authState = authViewModel.authState.observeAsState()
-
-
-    LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Unauthenticated -> navController.navigate("login")
-            else -> Unit
-        }
-    }
 
 //    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
@@ -95,13 +85,6 @@ fun HomeScreen(
                         navController.navigate("search")
                     }
                 )
-            }
-
-            //        Sign Out text
-            TextButton(onClick = {
-                authViewModel.signout()
-            }) {
-                Text(text = "Sign out")
             }
 
             //        List Posts
