@@ -28,7 +28,7 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
             RegisterScreen(modifier, navController, authViewModel)
         }
         composable("home") {
-            HomeScreen(modifier, navController, authViewModel)
+            HomeScreen(modifier, navController)
         }
         composable("postScreen") {
             val postViewModel: PostViewModel = hiltViewModel()

@@ -13,7 +13,7 @@ import com.example.advancedandroidcourse.R
 
 @Composable
 fun FavoriteIcon(modifier: Modifier = Modifier) {
-    val favoriteIconPainter = painterResource(id = R.drawable.favorite)
+    val favoriteIconPainter = painterResource(id = R.drawable.save)
 
     IconButton(
         onClick = { },
@@ -21,7 +21,7 @@ fun FavoriteIcon(modifier: Modifier = Modifier) {
     ) {
         Icon(
             painter = favoriteIconPainter,
-            contentDescription = "Like",
+            contentDescription = "Save",
             tint = Color.Red
         )
     }
