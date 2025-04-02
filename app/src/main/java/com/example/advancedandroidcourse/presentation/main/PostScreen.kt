@@ -57,6 +57,7 @@ fun PostScreen(
     var content by remember { mutableStateOf("") }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var isPosting by remember { mutableStateOf(false) } // Track post status
+    var showError by remember { mutableStateOf(false) } //Track validation errors
 
     //Create an image picker Launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -108,6 +109,10 @@ fun PostScreen(
             }
         }
 
+        if (showError && imageUris.isEmpty()) {
+            Text("Please upload at least one image", color = Color.Red, fontSize = 14.sp)
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
 
         //Title input
@@ -121,6 +126,10 @@ fun PostScreen(
                 .background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
                 .padding(12.dp)
         )
+
+        if (showError && title.isBlank()) {
+            Text("Title cannot be empty", color = Color.Red, fontSize = 14.sp)
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -136,6 +145,10 @@ fun PostScreen(
                 .background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
                 .padding(12.dp)
         )
+
+        if (showError && content.isBlank()) {
+            Text("Content cannot be empty", color = Color.Red, fontSize = 14.sp)
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -201,7 +214,13 @@ fun PostScreen(
             //Post Button
             Button(
                 onClick = {
+                    if (title.isNotBlank() || content.isNotBlank() || imageUris.isNotEmpty()){
+                        showError = true
+                        return@Button
+                    }
                     isPosting = true
+                    showError = false
+
                     postViewModel.createPost(
                         title = title,
                         content = content,
@@ -213,6 +232,7 @@ fun PostScreen(
                             onBackClick()
                         }
                     }
+
                 },
                 enabled = !isPosting, //Disable when posting
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
@@ -222,4 +242,4 @@ fun PostScreen(
                 Text(text = stringResource(id = R.string.post), color = Color.White)
             }
         }
-    }
+}
