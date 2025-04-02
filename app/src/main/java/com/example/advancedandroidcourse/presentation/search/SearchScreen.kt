@@ -31,6 +31,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hiltViewModel()) {
@@ -78,10 +80,21 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
                     }
                 }
             } else {
-                item { SectionTitle("Hot") }
+                //Hot Tips section
+                item {
+                    Text(
+                        text = "Hot",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
                 if (hotTips.isNotEmpty()) {
                     items(hotTips) { tip ->
                         TipItem(tip, navController)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
                 item {
@@ -89,8 +102,15 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
                 }
                 }
 
-            //Always show section title
-                item { SectionTitle("Latest") }
+            //Latest Tips section
+                item {
+                    Text(
+                        text = "Latest",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
                 if (latestTips.isNotEmpty()) {
                     items(latestTips) { tip ->
                         TipItem(tip, navController)
