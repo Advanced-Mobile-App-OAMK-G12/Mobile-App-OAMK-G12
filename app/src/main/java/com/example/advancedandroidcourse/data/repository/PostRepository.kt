@@ -108,8 +108,7 @@ class PostRepository @Inject constructor(
 
                 PostDetails(
                     post = post,
-                    userName = user?.name ?: "Unknown",
-                    userAvatar = user?.image ?: ""
+                    user = user ?: User(name = "Unknown", image = "")
                 )
             }
         } catch (e: Exception) {
@@ -142,8 +141,7 @@ class PostRepository @Inject constructor(
 
                 PostDetails(
                     post = post,
-                    userName = user?.name ?: "Unknown",
-                    userAvatar = user?.image ?: ""
+                    user = user ?: User(name = "Unknown", image = "")
                 )
             }
         } catch (e: Exception) {
@@ -164,6 +162,30 @@ class PostRepository @Inject constructor(
                 onComplete(false)
                 Log.e("FirebaseError", "Error updating saved count", exception)
             }
+    }
+
+    suspend fun getPostDetails(tipId: String): PostDetails? {
+        Log.d("PostRepository", "getPostDetails() STARTED with tipId: $tipId")
+
+        return try {
+            Log.d("PostRepository", "Fetching post details for tipId: $tipId")
+            val postDoc = firestore.collection("tips").document(tipId).get().await()
+            val post = postDoc.toObject(Post::class.java)
+
+            val userDoc = firestore.collection("users").document(post?.userId ?: "").get().await()
+            val user = userDoc.toObject(User::class.java)
+
+            if (post != null && user != null) {
+                Log.d("PostRepository", "Post and user found for tipId: $tipId")
+                PostDetails(post = post, user = user)
+            } else  {
+                Log.d("PostRepository", "Post or user not found for tipId: $tipId")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error fetching post details for tipId: $tipId", e)
+            null
+        }
     }
 
 }

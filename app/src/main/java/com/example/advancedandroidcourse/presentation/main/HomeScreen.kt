@@ -108,7 +108,8 @@ fun HomeScreen(
 
                             postViewModel.updateSavedCount(postDetails.post.id, newSavedCount)
                         },
-                        showAuthorInfo = true
+                        showAuthorInfo = true,
+                        navController = navController
                     )
                 }
             }

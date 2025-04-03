@@ -115,4 +115,17 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+
+//    Get postDetails
+    private val _postDetails = mutableStateOf<PostDetails?>(null)
+    val postDetails: State<PostDetails?> = _postDetails
+
+    fun getPostDetails(tipId: String) {
+        viewModelScope.launch {
+            Log.d("PostViewModel", "Fetching post details for tipId: $tipId")
+            val result = postRepository.getPostDetails(tipId)
+            Log.d("PostViewModel", "Post details fetched successfully for tipId: $tipId")
+            _postDetails.value = result
+        }
+    }
 }

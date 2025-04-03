@@ -1,6 +1,8 @@
 package com.example.advancedandroidcourse.presentation.composables
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
@@ -33,13 +37,26 @@ import java.nio.file.WatchEvent
 fun PostItem(
     postDetails: PostDetails,
     showAuthorInfo: Boolean,
-    onToggleSaved: () -> Unit
+    onToggleSaved: () -> Unit,
+    navController: NavController
 ) {
 
     Column (
         modifier = Modifier.padding(8.dp)
     ) {
-        Column {
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {},
+                        onTap = {
+                            Log.d("HomeScreen", "Navigating to postDetails with tipId: ${postDetails.post.id}")
+                            navController.navigate("postDetails/${postDetails.post.id}")
+                        }
+                    )
+                }
+        ){
             Image(
                 painter = rememberImagePainter(postDetails.post.images[0]),
                 contentDescription = "Post Image",
@@ -56,8 +73,8 @@ fun PostItem(
 //  Display author's information
         if (showAuthorInfo) {
             AuthorInfo(
-                userAvatar = postDetails.userAvatar,
-                userName = postDetails.userName,
+                userAvatar = postDetails.user.image,
+                userName = postDetails.user.name,
                 isSaved = postDetails.post.savedCount > 0,
                 onToggleSaved = onToggleSaved
             )
