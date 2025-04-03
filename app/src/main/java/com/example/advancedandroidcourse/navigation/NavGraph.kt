@@ -41,7 +41,7 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
         ) { backStackEntry ->
             val tipId = backStackEntry.arguments?.getString("tipId")
             if (tipId != null) {
-                PostDetailsScreen(tipId = tipId)
+                PostDetailsScreen(tipId = tipId, navController = navController)
             }
         }
         composable("postScreen") {
