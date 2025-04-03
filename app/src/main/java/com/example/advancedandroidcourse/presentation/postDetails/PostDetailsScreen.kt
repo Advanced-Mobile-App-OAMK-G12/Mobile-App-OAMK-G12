@@ -57,7 +57,7 @@ fun PostDetailsScreen(
         val pagerState = rememberPagerState { images.size }
 
         Column (
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(start = 6.dp, top = 8.dp)
         ) {
             Row (
                 modifier = Modifier.fillMaxWidth(),
@@ -85,13 +85,13 @@ fun PostDetailsScreen(
                         painter = rememberImagePainter(postDetails.user.image),
                         contentDescription = "Author Avatar",
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(28.dp)
                             .clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = postDetails.user.name,
-                        style = MaterialTheme.typography.displaySmall
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
                 IconButton(onClick = {
