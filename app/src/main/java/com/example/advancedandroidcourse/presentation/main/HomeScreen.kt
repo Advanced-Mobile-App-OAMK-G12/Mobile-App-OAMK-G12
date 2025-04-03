@@ -101,8 +101,6 @@ fun HomeScreen(
                     PostItem(
                         postDetails = postDetails,
                         onToggleSaved = {
-                            Log.d("HomeScreen", "HomeScreen Save button clicked for post ID: ${postDetails.post.id}")
-                            Log.d("HomeScreen", "PostDetails: ${postDetails}")
                             val newSavedCount = if (isSaved) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
 
