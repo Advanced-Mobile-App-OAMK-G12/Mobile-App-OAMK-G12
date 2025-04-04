@@ -6,6 +6,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -31,10 +34,13 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.model.Tip
+import com.example.advancedandroidcourse.data.model.toPost
 import com.example.advancedandroidcourse.presentation.auth.AuthState
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
+import com.example.advancedandroidcourse.presentation.composables.PostItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +52,7 @@ fun ProfileScreen(
     val user by viewModel.user.collectAsState()
     val favorites by viewModel.favoriteTips.collectAsState()
     val posts by viewModel.postedTips.collectAsState()
-    var selectedTab by remember { mutableStateOf("favorites") }
+    var selectedTab by remember { mutableStateOf("posts") }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -96,7 +102,7 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Profile Image
             Box(
@@ -137,16 +143,31 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(text = user?.name ?: "Username", style = MaterialTheme.typography.titleMedium)
-            Text(text = user?.bio ?: "No bio", style = MaterialTheme.typography.bodyMedium)
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Edit button
-            IconButton(onClick = { navController.navigate("editProfile") }) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Profile"
+            // Bio + Edit in one line
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = user?.bio ?: "No bio",
+                    style = MaterialTheme.typography.bodyMedium
                 )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                IconButton(
+                    onClick = { navController.navigate("editProfile") },
+                    modifier = Modifier.size(20.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        modifier = Modifier.size(16.dp) // 控制图标大小
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -158,18 +179,6 @@ fun ProfileScreen(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { selectedTab = "favorites" }
-                ) {
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = "Favorites",
-                        tint = if (selectedTab == "favorites") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-                    Text("Favorites", style = MaterialTheme.typography.bodySmall)
-                }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable { selectedTab = "posts" }
                 ) {
                     Icon(
@@ -179,35 +188,91 @@ fun ProfileScreen(
                     )
                     Text("Posts", style = MaterialTheme.typography.bodySmall)
                 }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable { selectedTab = "favorites" }
+                ) {
+                    Icon(
+                        Icons.Default.Favorite,
+                        contentDescription = "Favorites",
+                        tint = if (selectedTab == "favorites") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                    Text("Favorites", style = MaterialTheme.typography.bodySmall)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Tips List
-            val tipsToShow = if (selectedTab == "favorites") favorites else posts
+            val tipsToShow = if (selectedTab == "posts") posts else favorites
 
             if (tipsToShow.isEmpty()) {
                 Text("No tips to show.")
             } else {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    tipsToShow.forEach { tip ->
-                        TipCard(tip)
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(bottom = 64.dp)
+                ) {
+                    items(tipsToShow) { tip ->
+                        user?.let { currentUser ->
+                            val postDetails = PostDetails(post = tip.toPost(), user = currentUser)
+                            if (selectedTab == "posts") {
+                                MyPostItem(
+                                    postDetails = postDetails,
+                                    navController = navController,
+                                    onDelete = { viewModel.deletePost(tip.id) }
+                                )
+
+                            } else {
+                                PostItem(
+                                    postDetails = postDetails,
+                                    showAuthorInfo = true,
+                                    onToggleSaved = {},
+                                    navController = navController
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
-}
 
+    /*@Composable
+    fun TipCard(tip: Tip) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = tip.title, style = MaterialTheme.typography.titleMedium)
+                Text(text = tip.content, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }*/
+}
 @Composable
-fun TipCard(tip: Tip) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = tip.title, style = MaterialTheme.typography.titleMedium)
-            Text(text = tip.content, style = MaterialTheme.typography.bodySmall)
+fun MyPostItem(
+    postDetails: PostDetails,
+    navController: NavController,
+    onDelete: () -> Unit
+) {
+    Column {
+        PostItem(
+            postDetails = postDetails,
+            showAuthorInfo = false,
+            onToggleSaved = {},
+            navController = navController
+        )
+        Button(
+            onClick = { onDelete() },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 12.dp)
+        ) {
+            Text("Delete")
         }
     }
 }

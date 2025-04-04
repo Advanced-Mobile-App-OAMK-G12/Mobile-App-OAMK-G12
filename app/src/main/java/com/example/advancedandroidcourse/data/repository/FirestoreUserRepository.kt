@@ -61,6 +61,13 @@ class FirestoreUserRepository @Inject constructor(
             .get()
             .await()
 
-        return tipSnapshots.documents.mapNotNull { it.toObject(Tip::class.java) }
+        return tipSnapshots.documents.mapNotNull { doc ->
+            doc.toObject(Tip::class.java)?.copy(id = doc.id)
+        }
+    }
+
+    override suspend fun deletePost(postId: String): Boolean {
+        firestore.collection("tips").document(postId).delete().await()
+        return true
     }
 }

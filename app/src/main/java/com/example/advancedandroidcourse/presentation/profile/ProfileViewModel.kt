@@ -92,7 +92,16 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            try {
+                userRepository.deletePost(postId)
+                loadPostedTips()
+            } catch (e: Exception) {
+                _error.value = "Failed to delete post: ${e.message}"
+            }
+        }
+    }
     fun updateProfile(name: String, bio: String) {
         viewModelScope.launch {
             try {
