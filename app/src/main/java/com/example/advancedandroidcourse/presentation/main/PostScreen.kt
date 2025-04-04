@@ -8,14 +8,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,22 +38,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextField
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.advancedandroidcourse.R
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
     onBackClick: () -> Unit //Back navigation function
-    //onPostClick: () -> Unit //Post action function
+
 ) {
     val postViewModel: PostViewModel = hiltViewModel() //inject ViewModel
     var title by remember { mutableStateOf("") }
@@ -76,101 +76,113 @@ fun PostScreen(
         "housing & jobs",
         "language & integration"
     )
-    var selectedTag by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var selectedTags by remember { mutableStateOf(setOf<String>()) }
+    //var expanded by remember { mutableStateOf(false) }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues (bottom = 16.dp)
     ) {
-        //Back button
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(id = R.string.back)
-            )
+        item {
+            //Back button
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
 
-        //Image selection-using placeholder and coil for loading image
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            imageUris.take(3).forEach { uri ->
-                AsyncImage(
-                    model = uri,
-                    contentDescription = stringResource(id = R.string.add),
+        //Spacer(modifier = Modifier.height(12.dp))
+
+        item {
+
+            //Image selection-using placeholder and coil for loading image
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                imageUris.take(3).forEach { uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = stringResource(id = R.string.add),
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color.LightGray, RoundedCornerShape(12.dp))
+                    )
+
+                    //Spacer(modifier = Modifier.width(12.dp))
+                }
+                //Image picker button
+                Box(
                     modifier = Modifier
                         .size(100.dp)
                         .background(Color.LightGray, RoundedCornerShape(12.dp))
-                    //.clickable {imagePickerLauncher.launch("image/*") } //open system file picker
-                )
+                        .clickable { imagePickerLauncher.launch("image/*") },
+                    contentAlignment = Alignment.Center
+                ) {
 
-                //Spacer(modifier = Modifier.width(12.dp))
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add),
+                        tint = Color.DarkGray
+                    )
+                }
             }
-            //Image picker button
-            Box(
+        }
+
+        item {
+
+            if (showError && imageUris.isEmpty()) {
+                Text("Please upload at least one image", color = Color.Red, fontSize = 14.sp)
+            }
+        }
+
+        //Spacer(modifier = Modifier.height(16.dp))
+
+        item {
+
+            //Title input
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text(stringResource(R.string.write_your_title_here)) },
+                textStyle = TextStyle(fontSize = 18.sp),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (showError && title.isBlank()) {
+                Text("Title cannot be empty", color = Color.Red, fontSize = 14.sp)
+            }
+        }
+
+
+        //Spacer(modifier = Modifier.height(12.dp))
+
+        item {
+
+            //Content input
+            OutlinedTextField(
+                value = content,
+                onValueChange = { content = it },
+                label = { Text(stringResource(R.string.whats_your_tips)) },
+                textStyle = TextStyle(fontSize = 16.sp),
                 modifier = Modifier
-                    .size(100.dp)
-                    .background(Color.LightGray, RoundedCornerShape(12.dp))
-                    .clickable { imagePickerLauncher.launch("image/*") },
-                contentAlignment = Alignment.Center
-            ) {
-                //Text("+", fontSize = 24.sp, color = Color.DarkGray)
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add),
-                    tint = Color.DarkGray
-                )
+                    .fillMaxWidth()
+                    .height(150.dp)
+            )
+
+
+            if (showError && content.isBlank()) {
+                Text("Content cannot be empty", color = Color.Red, fontSize = 14.sp)
             }
         }
 
-        if (showError && imageUris.isEmpty()) {
-            Text("Please upload at least one image", color = Color.Red, fontSize = 14.sp)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        //Title input
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text(stringResource(R.string.write_your_title_here)) },
-            textStyle = TextStyle(fontSize = 18.sp),
-            //placeholder = { Text(stringResource(id = R.string.write_your_title_here), color = Color.Gray) },
-            modifier = Modifier.fillMaxWidth()
-            //.background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
-            //.padding(12.dp)
-        )
-
-        if (showError && title.isBlank()) {
-            Text("Title cannot be empty", color = Color.Red, fontSize = 14.sp)
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        //Content input
-        OutlinedTextField(
-            value = content,
-            onValueChange = { content = it },
-            label = { Text(stringResource(R.string.whats_your_tips)) },
-            textStyle = TextStyle(fontSize = 16.sp),
-            //placeholder = { Text(stringResource(id = R.string.whats_your_tips), color = Color.Gray) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-            //.background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
-            //.padding(12.dp)
-        )
-
-        if (showError && content.isBlank()) {
-            Text("Content cannot be empty", color = Color.Red, fontSize = 14.sp)
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
+        //Spacer(modifier = Modifier.height(12.dp))
 
         //Dropdown for selecting a tag
-        ExposedDropdownMenuBox(
+        /* ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
@@ -202,67 +214,76 @@ fun PostScreen(
                     )
                 }
             }
-        }
+        }*/
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item {
 
-        //Save & post Buttons
-        /*Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.clickable { /* save logic */ },
-                verticalAlignment = Alignment.CenterVertically
+            //Tag Selection using clickable buttons
+            Text("Select # Tags", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                IconButton(onClick = { /* save logic */ }) {
-                    Icon(
-                        imageVector = Icons.Filled.Bookmark,
-                        contentDescription = stringResource(id = R.string.save),
-                        tint = Color.Gray
+                tagOptions.forEach { tag ->
+                    FilterChip(
+                        selected = selectedTags.contains(tag),
+                        onClick = {
+                            selectedTags = if (selectedTags.contains(tag)) {
+                                selectedTags - tag
+                            } else {
+                                selectedTags + tag
+                            }
+                        },
+                        label = { Text(tag) },
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .widthIn(min = 170.dp)
                     )
                 }
+            }
+        }
 
-                Text(
-                    text = stringResource(id = R.string.save),
-                    color = Color.Gray
-                )
-            }*/
-        //Post Button
-        Button(
-            onClick = {
-                if (title.isBlank() || content.isBlank() || imageUris.isEmpty()) {
-                    showError = true
-                    return@Button
-                }
-                isPosting = true
-                showError = false
 
-                postViewModel.createPost(
-                    title = title,
-                    content = content,
-                    imageUris = imageUris,
-                    tags = listOf(selectedTag)
-                ) { success ->
-                    isPosting = false
-                    if (success) {
-                        onBackClick()
+        //Spacer(modifier = Modifier.height(16.dp))
+
+
+
+        item {
+            //Post Button
+            Button(
+                onClick = {
+                    if (title.isBlank() || content.isBlank() || imageUris.isEmpty()) {
+                        showError = true
+                        return@Button
                     }
-                }
+                    isPosting = true
+                    showError = false
 
-            },
-            enabled = !isPosting, //Disable when posting
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            if (isPosting) {
-                Text("Posting...", color = Color.Blue)
-            } else {
-                Text(text = stringResource(id = R.string.post), color = Color.White)
+                    postViewModel.createPost(
+                        title = title,
+                        content = content,
+                        imageUris = imageUris,
+                        tags = selectedTags.toList()
+                    ) { success ->
+                        isPosting = false
+                        if (success) {
+                            onBackClick()
+                        }
+                    }
+
+                },
+                enabled = !isPosting, //Disable when posting
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                if (isPosting) {
+                    Text("Posting...", color = Color.Blue)
+                } else {
+                    Text(text = stringResource(id = R.string.post), color = Color.White)
+                }
             }
         }
     }
