@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,9 +43,11 @@ fun CommentItem(commentDetails: CommentDetails) {
         Column(modifier = Modifier.weight(1f)) {
             // User Name
             Text(text = user.name, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Comment content
             Text(text = comment.content)
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = comment.timestamp.formatToDate(),
@@ -53,5 +56,6 @@ fun CommentItem(commentDetails: CommentDetails) {
             )
 
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

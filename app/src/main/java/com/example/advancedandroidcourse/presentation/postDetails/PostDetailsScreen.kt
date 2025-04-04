@@ -1,6 +1,7 @@
 package com.example.advancedandroidcourse.presentation.postDetails
 
-import android.util.Log
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -17,36 +18,41 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.PointerId
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.R
-import com.example.advancedandroidcourse.data.model.Comment
-import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.presentation.comment.CommentItem
 import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
-import com.example.advancedandroidcourse.presentation.main.PostViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+
+fun shareContent(tipId: String, context: Context) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = android.content.ClipData.newPlainText("Post Link", "http://easyfinn.com/tip/$tipId")
+    clipboard.setPrimaryClip(clip)
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,6 +63,11 @@ fun PostDetailsScreen(
 
     val viewModel: PostDetailsViewModel = hiltViewModel()
     val postDetails = viewModel.postDetails.value
+
+    val context = LocalContext.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    SnackbarHost(hostState = snackbarHostState)
 
     val comments by viewModel.comments.collectAsState()
 
@@ -111,8 +122,10 @@ fun PostDetailsScreen(
 
 //                ShareButton
                 IconButton(onClick = {
-                    val shareableLink = "http://easyfinn.com/${postDetails.post.id}"
-                    Log.d("Share", "Share this link: $shareableLink")
+                    shareContent(tipId, context)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        snackbarHostState.showSnackbar("Post link copied!")
+                    }
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.share),
@@ -164,7 +177,6 @@ fun PostDetailsScreen(
                     viewModel.getComments(tipId)
                 }
             )
-            Log.d("PostDetailsScreen", "tipId = $tipId")
 
             LazyColumn {
                 items(comments) { commentDetails ->

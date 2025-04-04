@@ -31,16 +31,16 @@ fun BottomBar (
     modifier: Modifier = Modifier
     ) {
     val home = stringResource(R.string.home)
-    val hot = stringResource(R.string.hot)
+    val saved = stringResource(R.string.saved)
     val add = stringResource(R.string.add)
-    val latest = stringResource(R.string.latest)
+    val notification = stringResource(R.string.notification)
     val profile = stringResource(R.string.profile)
 
     val items = listOf(
         R.drawable.home_outline to home,
-        R.drawable.hot to hot,
+        R.drawable.save to saved,
         R.drawable.add to add,
-        R.drawable.new_releases to latest,
+        R.drawable.notification to notification,
         R.drawable.account to profile
     )
 
