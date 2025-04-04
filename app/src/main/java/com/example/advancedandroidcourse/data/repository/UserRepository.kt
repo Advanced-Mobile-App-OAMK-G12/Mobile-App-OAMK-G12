@@ -1,6 +1,7 @@
 package com.example.advancedandroidcourse.data.repository
 
 import android.net.Uri
+import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.Tip
 import com.example.advancedandroidcourse.data.model.User
 
@@ -10,4 +11,5 @@ interface UserRepository {
     suspend fun uploadProfileImage(imageUri: Uri): String?
     suspend fun getUserFavorites(): List<Tip>
     suspend fun getUserPosts(): List<Tip>
+    suspend fun deletePost(postId: String): Boolean
 }
