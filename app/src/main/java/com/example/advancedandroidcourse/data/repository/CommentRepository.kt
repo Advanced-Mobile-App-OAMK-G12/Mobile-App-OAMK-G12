@@ -12,7 +12,6 @@ import com.google.firebase.Timestamp
 import java.sql.Time
 import javax.inject.Inject
 
-//data class commentRepository()
 class CommentRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
@@ -41,7 +40,7 @@ class CommentRepository @Inject constructor(
         return try {
             val querySnapshot = firestore.collection("comments")
                 .whereEqualTo("tipId", tipId)
-                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
 
@@ -61,6 +60,10 @@ class CommentRepository @Inject constructor(
                     .get()
                     .await()
                 val user = userSnapshot.toObject(User::class.java)
+
+                if (user == null) {
+                    Log.d("CommentRepository", "User not found for comment by userId = ${comment.userId}")
+                }
 
                 CommentDetails(
                     comment = comment,

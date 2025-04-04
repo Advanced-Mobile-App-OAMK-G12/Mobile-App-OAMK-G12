@@ -58,6 +58,7 @@ class PostDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val fetchedComments = commentRepository.getComments(tipId)
+                Log.d("PostDetailViewModel", "Fetched ${fetchedComments.size} comments")
                 _comments.value = fetchedComments
             } catch (e: Exception) {
                 Log.e("PostDetailViewModel", "Error fetching comments", e)
