@@ -36,11 +36,9 @@ class PostDetailsViewModel @Inject constructor(
     val comments: StateFlow<List<CommentDetails>> = _comments.asStateFlow()
 
     fun getPostDetails(tipId: String) {
-        Log.d("PostDetailsViewModel", "getPostDetails function STARTED with tipId: $tipId")
+
         viewModelScope.launch {
-            Log.d("PostDetailsViewModel", "Fetching post details for tipId: $tipId")
             val result = postRepository.getPostDetails(tipId)
-            Log.d("PostDetailsViewModel", "Post details fetched successfully for tipId: $tipId")
             _postDetails.value = result
         }
 
@@ -58,6 +56,7 @@ class PostDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val fetchedComments = commentRepository.getComments(tipId)
+                Log.d("PostDetailViewModel", "Fetched ${fetchedComments.size} comments")
                 _comments.value = fetchedComments
             } catch (e: Exception) {
                 Log.e("PostDetailViewModel", "Error fetching comments", e)

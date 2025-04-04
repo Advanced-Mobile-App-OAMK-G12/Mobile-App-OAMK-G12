@@ -45,6 +45,7 @@ import com.example.advancedandroidcourse.data.model.Comment
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.presentation.comment.CommentItem
 import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
+import com.example.advancedandroidcourse.presentation.composables.formatToDate
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -151,36 +152,25 @@ fun PostDetailsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "${postDetails.post.timestamp?.toDate()?.toString()}",
+                text = postDetails.post.timestamp.formatToDate(),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+//            Comments
             PostCommentInput(
                 tipId = tipId,
                 onCommentAdded = {
                     viewModel.getComments(tipId)
                 }
             )
+            Log.d("PostDetailsScreen", "tipId = $tipId")
 
             LazyColumn {
                 items(comments) { commentDetails ->
                     CommentItem(commentDetails)
                 }
             }
-
-//            LazyColumn {
-//                items(comments) { commentDetails ->
-//                    Column(
-//                        modifier = Modifier.padding(8.dp)
-//                    ) {
-//                        Text(commentDetails.user.name)
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        Text(commentDetails.comment.content)
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                    }
-//                }
-//            }
         }
     }
 }

@@ -168,7 +168,7 @@ class PostRepository @Inject constructor(
         Log.d("PostRepository", "getPostDetails() STARTED with tipId: $tipId")
 
         return try {
-            Log.d("PostRepository", "Fetching post details for tipId: $tipId")
+
             val postDoc = firestore.collection("tips").document(tipId).get().await()
             val post = postDoc.toObject(Post::class.java)
 
