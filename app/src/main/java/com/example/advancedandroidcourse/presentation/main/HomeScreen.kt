@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,6 +45,8 @@ import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.composables.SearchBar
+import com.example.advancedandroidcourse.presentation.composables.TopBar
+import kotlinx.coroutines.selects.select
 
 @Composable
 fun HomeScreen(
@@ -54,42 +59,36 @@ fun HomeScreen(
     val posts by postViewModel.posts.collectAsState(emptyList())
     val listState = rememberLazyListState()
 
-    var searchValue by remember { mutableStateOf("")}
-
-
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
+//        TopBar
+        TopBar(
+            navController = navController,
+//            selectedTab = selectedTab,
+//            onTabSelected = { selectedTab = it },
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+
+//        when (selectedTab) {
+//            "HOT" -> HotPosts()
+//            "DISCOVER" -> DiscoverPost()
+//            "LATEST" -> LatesPosts()
+//        }
+
+//        PostsList
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(start = 6.dp, top = 8.dp),
+                .padding(top = 26.dp),
 
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(18.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "easy Finn Logo",
-                    modifier = Modifier.size(80.dp)
-                )
-                SearchBar(
-                    value = searchValue,
-                    onValueChange = { searchValue = it },
-                    iconRes = R.drawable.search,
-                    onSearchClick = {
-                        navController.navigate("search")
-                    }
-                )
-            }
 
-            //        List Posts
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
@@ -112,6 +111,8 @@ fun HomeScreen(
                 }
             }
         }
+
+//        BottomBar
         BottomBar(
             navController = navController,
             modifier = Modifier.align(Alignment.BottomCenter)
