@@ -3,6 +3,7 @@ package com.example.advancedandroidcourse.presentation.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.advancedandroidcourse.data.model.Tip
 import com.example.advancedandroidcourse.data.repository.PostRepository
 import com.example.advancedandroidcourse.data.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,14 +16,14 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repository: SearchRepository
 ) : ViewModel() {
-    private val _hotTips = MutableStateFlow<List<String>>(emptyList())
-    val hotTips: StateFlow<List<String>> = _hotTips
+    private val _hotTips = MutableStateFlow<List<Tip>>(emptyList())
+    val hotTips: StateFlow<List<Tip>> = _hotTips
 
-    private val _latestTips = MutableStateFlow<List<String>>(emptyList())
-    val latestTips: StateFlow<List<String>> = _latestTips
+    private val _latestTips = MutableStateFlow<List<Tip>>(emptyList())
+    val latestTips: StateFlow<List<Tip>> = _latestTips
 
-    private val _searchResults = MutableStateFlow<List<String>>(emptyList())
-    val searchResults: StateFlow<List<String>> = _searchResults
+    private val _searchResults = MutableStateFlow<List<Tip>>(emptyList())
+    val searchResults: StateFlow<List<Tip>> = _searchResults
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
