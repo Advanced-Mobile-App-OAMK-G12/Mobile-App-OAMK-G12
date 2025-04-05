@@ -31,6 +31,9 @@ class SearchViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow("")
     val errorMessage: StateFlow<String> = _errorMessage
 
+    private val _searchPerformed =MutableStateFlow(false)
+    val searchPerformed: StateFlow<Boolean> = _searchPerformed
+
     init {
         fetchTips()
     }
@@ -51,12 +54,24 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun clearSearchResults() {
+        _searchResults.value = emptyList()
+        _searchPerformed.value = false
+    }
+
     fun searchTips(query: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = ""
+            _searchPerformed.value = false //Reset before search
+
             try {
-                _searchResults.value = if (query.isNotEmpty()) repository.searchTips(query) else emptyList()
+                if (query.isNotEmpty()) {
+                    _searchResults.value = repository.searchTips(query)
+                    _searchPerformed.value = true
+                } else {
+                    _searchResults.value = emptyList()
+                }
             } catch (e: Exception) {
                 _errorMessage.value = "Search failed"
             } finally {

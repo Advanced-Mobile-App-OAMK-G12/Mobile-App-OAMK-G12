@@ -58,9 +58,15 @@ class SearchRepository @Inject constructor() {
                 .await()
                 .documents
                 .map {
-                    val id = it.id
-                    val title = it.getString("title") ?: ""
-                    Tip(id, title)}
+                    Tip(
+                        id = it.id,
+                        title = it.getString("title") ?: "",
+                        content = it.getString("content") ?: "",
+                        images = it.get("images") as? List<String> ?: emptyList(),
+                        userId = it.getString("userId") ?: "",
+                        tags = it.get("tags") as? List<String> ?: emptyList()
+                    )
+                }
 
         } catch (e: Exception) {
             emptyList()
