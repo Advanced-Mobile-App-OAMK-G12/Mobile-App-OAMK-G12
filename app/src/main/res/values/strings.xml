@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AdvancedAndroidCourse</string>
     <string name="home">homeScreen</string>
-    <string name="saved">savedScreen</string>
+    <string name="saved">FavoriteTipsScreen</string>
     <string name="add">postScreen</string>
     <string name="notification">notificaionScreen</string>
     <string name="profile">profileScreen</string>

@@ -65,6 +65,7 @@ fun BottomBar (
                         add -> navController.navigate("postScreen")
                         profile -> navController.navigate("profile")
                         home -> navController.navigate("home")
+                        saved -> navController.navigate("favoriteTips")
                     }
                 },
                 modifier = Modifier

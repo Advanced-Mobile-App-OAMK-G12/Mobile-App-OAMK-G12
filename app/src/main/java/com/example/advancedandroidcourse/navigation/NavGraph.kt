@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.advancedandroidcourse.presentation.Favorite.FavoriteTipsScreen
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.main.HomeScreen
 import com.example.advancedandroidcourse.presentation.main.PostScreen
@@ -58,6 +59,9 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
         }
         composable("search") {
             SearchScreen(navController)
+        }
+        composable("favoriteTips") {
+            FavoriteTipsScreen(navController)
         }
     }
 }
