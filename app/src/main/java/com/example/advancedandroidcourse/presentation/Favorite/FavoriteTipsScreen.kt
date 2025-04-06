@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.SearchBar
 import com.example.advancedandroidcourse.presentation.composables.TipCard
+import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @Composable
 fun FavoriteTipsScreen(
@@ -31,6 +33,9 @@ fun FavoriteTipsScreen(
     val filteredTips = viewModel.tipList.filter {
         it.title.contains(searchQuery, ignoreCase = true)
     }
+    val notificationViewModel: NotificationViewModel = hiltViewModel()
+    val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         SearchBar(
@@ -53,6 +58,6 @@ fun FavoriteTipsScreen(
 
         }
 
-        BottomBar(navController = navController)
+        BottomBar(navController = navController, hasUnreadNotifications)
     }
 }

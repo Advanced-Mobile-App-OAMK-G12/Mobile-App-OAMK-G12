@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.composables.TopBar
+import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @Composable
 fun HomeScreen(
@@ -35,6 +36,9 @@ fun HomeScreen(
 //    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
     val listState = rememberLazyListState()
+
+    val notificationViewModel: NotificationViewModel = hiltViewModel()
+    val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
 
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
@@ -90,7 +94,8 @@ fun HomeScreen(
 //        BottomBar
         BottomBar(
             navController = navController,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hasUnreadNotifications = hasUnreadNotifications,
         )
     }
 }
