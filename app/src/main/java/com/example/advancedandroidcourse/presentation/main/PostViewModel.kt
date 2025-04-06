@@ -29,7 +29,6 @@ class PostViewModel @Inject constructor(
     val posts: StateFlow<List<PostDetails>> = _posts.asStateFlow()
 //    Getting more posts
     private var lastTimestamp: Timestamp? = null
-//    private var isLoading = false
 
     init {
         getInitialPosts()
@@ -101,14 +100,20 @@ class PostViewModel @Inject constructor(
     }
 
 //    Update savedCount
-    private val _postList = mutableStateListOf<PostDetails>()
-    val postList: List<PostDetails> = _postList
+//    private val _postList = mutableStateListOf<PostDetails>()
+//    val postList: List<PostDetails> = _postList
 
     fun updateSavedCount(tipId: String, newSavedCount: Int) {
         Log.d("PostViewModel", "PostViewModel Updating saved count for post ID: $tipId with new value: $newSavedCount")
+
         postRepository.updateSavedCount(tipId, newSavedCount) { success ->
             if (success) {
-                _postList.find { it.post.id == tipId }?.post?.savedCount = newSavedCount
+                val updatedList = _posts.value.map {
+                    if (it.post.id == tipId) {
+                        it.copy(post = it.post.copy(savedCount = newSavedCount))
+                    } else  it
+                }
+                _posts.value = updatedList
                 Log.d("SavedCount", "PostViewModel Saved count updated successfully")
             } else {
                 Log.e("SavedCount", "PostViewModel Error updating saved count")
