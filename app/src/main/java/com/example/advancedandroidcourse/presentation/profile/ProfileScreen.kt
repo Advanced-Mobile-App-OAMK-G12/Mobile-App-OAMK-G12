@@ -41,6 +41,7 @@ import com.example.advancedandroidcourse.presentation.auth.AuthState
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
+import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +61,8 @@ fun ProfileScreen(
         uri?.let { viewModel.uploadProfileImage(it) }
     }
     val authState = authViewModel.authState.observeAsState()
+    val notificationViewModel: NotificationViewModel = hiltViewModel()
+    val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
 
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Unauthenticated) {
@@ -93,7 +96,7 @@ fun ProfileScreen(
                 }
             )
         },
-        bottomBar = { BottomBar(navController) }
+        bottomBar = { BottomBar(navController, hasUnreadNotifications) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
