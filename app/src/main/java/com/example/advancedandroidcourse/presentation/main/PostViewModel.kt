@@ -100,9 +100,6 @@ class PostViewModel @Inject constructor(
     }
 
 //    Update savedCount
-//    private val _postList = mutableStateListOf<PostDetails>()
-//    val postList: List<PostDetails> = _postList
-
     fun updateSavedCount(tipId: String, newSavedCount: Int) {
         Log.d("PostViewModel", "PostViewModel Updating saved count for post ID: $tipId with new value: $newSavedCount")
 
