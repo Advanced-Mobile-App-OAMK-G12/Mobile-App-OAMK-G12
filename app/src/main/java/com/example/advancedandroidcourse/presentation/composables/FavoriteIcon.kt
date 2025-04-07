@@ -25,7 +25,7 @@ fun FavoriteIcon(
         modifier = Modifier.size(24.dp)
     ) {
         Icon(
-            painter = painterResource(id = if (isSaved) R.drawable.save_filled else R.drawable.save),
+            painter = painterResource(id = if (isSaved) R.drawable.favorite_filled else R.drawable.favorite),
             contentDescription = "Save",
             tint = Color.Red
         )
