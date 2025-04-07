@@ -117,7 +117,7 @@ fun BottomBar (
                                 profile -> navController.navigate("profile")
                                 home -> navController.navigate("home")
                                 notification -> navController.navigate("notifications")
-                                saved -> navController.navigate("favoriteTips")
+                                saved -> navController.navigate("savedTips")
                             }
                         }
                 ) {
