@@ -60,7 +60,7 @@ fun BottomBar (
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items.forEach{ (icon, description) ->
+        items.forEach { (icon, description) ->
 
             val isSelected = currentRoute == description
             val scale = remember { Animatable(1f) }
@@ -88,8 +88,14 @@ fun BottomBar (
                                     this.awaitRelease()
                                 } catch (
                                     _: Exception
-                                ) {}
+                                ) {
+                                }
                                 scale.animateTo(1f)
+                            }
+                        )
+                    }
+
+            ) {
                 Box(
                     modifier = Modifier
                         .then(
@@ -120,7 +126,7 @@ fun BottomBar (
                         contentDescription = description,
                         modifier = Modifier
                             .size(if (isSelected) 32.dp else 28.dp)
-                        )
+                    )
 
                     if (description == notification && hasUnreadNotifications) {
                         Box(
@@ -129,6 +135,8 @@ fun BottomBar (
                                 .background(MaterialTheme.colorScheme.error, CircleShape)
                         )
                     }
+
+                }
             }
         }
     }
