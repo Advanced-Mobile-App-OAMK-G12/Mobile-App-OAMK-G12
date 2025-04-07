@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,36 +35,42 @@ fun HomeScreen(
 
 //    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
-    val listState = rememberLazyListState()
 
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-//        TopBar
-        TopBar(
-            navController = navController,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
+    Scaffold(
+        //        TopBar
+        topBar = {
+            TopBar(
+                navController = navController,
+                modifier = Modifier.padding(top = 24.dp)
+                )
+        },
+        //        BottomBar
+        bottomBar = {
+            BottomBar(navController = navController)
+        }
 
-
+    ) { innerPadding ->
 //        PostsList
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(top = 26.dp),
+                .padding(innerPadding),
+//                .padding(top = 4.dp),
 
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+//            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                    .fillMaxWidth(),
+//                    .padding(4.dp),
                 contentPadding = PaddingValues(bottom = 56.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -86,11 +93,5 @@ fun HomeScreen(
                 }
             }
         }
-
-//        BottomBar
-        BottomBar(
-            navController = navController,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }

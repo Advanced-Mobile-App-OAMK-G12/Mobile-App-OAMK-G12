@@ -2,8 +2,8 @@ package com.example.advancedandroidcourse.presentation.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,82 +32,89 @@ import com.example.advancedandroidcourse.ui.theme.mainTextColor
 @Composable
 fun TopBar(
     navController: NavHostController,
-//    selectedTab: String,
-//    onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
 
     var selectedTab by remember { mutableStateOf("DISCOVER") }
 
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+            .height(76.dp)
+    )
+    {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.BottomCenter)
+            ,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
 //        Logo
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "easy Finn Logo",
-            modifier = Modifier.size(52.dp)
-        )
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "easy Finn Logo",
+                modifier = Modifier.size(52.dp)
+            )
 
 //        Navbutton in the middle
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            TextButton(
-                onClick = {selectedTab = "HOT"},
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.mainTextColor
-                )
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    "HOT",
-                    fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                    fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                )
-            }
+                TextButton(
+                    onClick = { selectedTab = "HOT" },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.mainTextColor
+                    )
+                ) {
+                    Text(
+                        "HOT",
+                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
+                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
+                    )
+                }
 
-            TextButton(
-                onClick = { selectedTab == "DISCOVER" },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.mainTextColor
-                )
-            ) {
-                Text(
-                    "DISCOVER",
-                    fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                    fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                )
-            }
+                TextButton(
+                    onClick = { selectedTab == "DISCOVER" },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.mainTextColor
+                    )
+                ) {
+                    Text(
+                        "DISCOVER",
+                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
+                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
+                    )
+                }
 
-            TextButton(
-                onClick = { selectedTab == "DISCOVER" },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.mainTextColor
-                )
-            ) {
-                Text(
-                    "LATEST",
-                    fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                    fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                )
+                TextButton(
+                    onClick = { selectedTab == "DISCOVER" },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.mainTextColor
+                    )
+                ) {
+                    Text(
+                        "LATEST",
+                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
+                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
+                    )
+                }
             }
-        }
 
 //        SearchButton
-        IconButton(onClick = {
-            navController.navigate("search")
-        }) {
-            Icon(
-                painter = painterResource(id = R.drawable.search),
-                contentDescription = "Search",
-                modifier = Modifier.size(28.dp)
-            )
+            IconButton(onClick = {
+                navController.navigate("search")
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.search),
+                    contentDescription = "Search",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
     }
 }
