@@ -1,15 +1,14 @@
 package com.example.advancedandroidcourse.data.repository
 
-import androidx.compose.runtime.snapshotFlow
 import com.example.advancedandroidcourse.data.model.Post
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import javax.inject.Inject
 
-class FavoriteTipsRepository @Inject constructor(
+class SaveTipsRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ){
-    fun getFavoriteTips(onResult: (List<Post>) -> Unit) {
+    fun getSaveTips(onResult: (List<Post>) -> Unit) {
         firestore.collection("tips")
             .orderBy("savedCount", Query.Direction.DESCENDING)
             .get()

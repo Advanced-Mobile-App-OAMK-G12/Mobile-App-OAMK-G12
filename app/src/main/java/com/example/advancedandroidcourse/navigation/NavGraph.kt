@@ -1,17 +1,14 @@
 package com.example.advancedandroidcourse.navigation
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.advancedandroidcourse.presentation.Favorite.FavoriteTipsScreen
+import com.example.advancedandroidcourse.presentation.savedTips.SaveTipsScreen
 import com.example.advancedandroidcourse.presentation.auth.AuthViewModel
 import com.example.advancedandroidcourse.presentation.main.HomeScreen
 import com.example.advancedandroidcourse.presentation.main.PostScreen
@@ -74,8 +71,8 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
                 viewModel.markNotificationsAsRead()
             }
         }
-        composable("favoriteTips") {
-            FavoriteTipsScreen(navController)
+        composable("savedTips") {
+            SaveTipsScreen(navController)
         }
     }
 }

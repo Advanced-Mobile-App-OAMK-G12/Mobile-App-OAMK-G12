@@ -1,11 +1,10 @@
-package com.example.advancedandroidcourse.presentation.Favorite
+package com.example.advancedandroidcourse.presentation.savedTips
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
@@ -24,9 +22,9 @@ import com.example.advancedandroidcourse.presentation.composables.TipCard
 import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @Composable
-fun FavoriteTipsScreen(
+fun SaveTipsScreen(
     navController: NavHostController,
-    viewModel: FavoriteTipsViewModel = hiltViewModel()
+    viewModel: SaveTipsViewModel = hiltViewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
