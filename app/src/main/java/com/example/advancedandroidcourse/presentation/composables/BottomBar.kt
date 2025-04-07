@@ -3,7 +3,9 @@ package com.example.advancedandroidcourse.presentation.composables
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.ui.theme.mainTextColor
 
 @Composable
 fun BottomBar (
@@ -60,58 +63,45 @@ fun BottomBar (
         items.forEach{ (icon, description) ->
 
             val isSelected = currentRoute == description
-            val scale = remember { Animatable(1f) }
-
-            IconButton(
-                onClick = {
-                    when (description) {
-                        add -> navController.navigate("postScreen")
-                        profile -> navController.navigate("profile")
-                        home -> navController.navigate("home")
-                        notification -> navController.navigate("notifications")
-                        saved -> navController.navigate("favoriteTips")
-                    }
-                },
-                modifier = Modifier
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                scale.animateTo(1.2f)
-                                try {
-                                    this.awaitRelease()
-                                } catch (
-                                    _: Exception
-                                ) {}
-                                scale.animateTo(1f)
+                Box(
+                    modifier = Modifier
+                        .then(
+                            if (isSelected) {
+                                Modifier.border(2.dp, MaterialTheme.colorScheme.mainTextColor)
+                            } else {
+                                Modifier
                             }
                         )
-                    }
-                    .then(
-                        if (isSelected) {
-                            Modifier.border(2.dp,MaterialTheme.colorScheme.primary)
-                        } else {
-                            Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(onPress = {})
                         }
-                    )
-            ) {
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = description,
-                    modifier = Modifier
-                        .size(if (isSelected) 32.dp else 28.dp)
-                    )
-
-                if (description == notification && hasUnreadNotifications) {
-                    Box(
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            when (description) {
+                                add -> navController.navigate("postScreen")
+                                profile -> navController.navigate("profile")
+                                home -> navController.navigate("home")
+                                notification -> navController.navigate("notifications")
+                                saved -> navController.navigate("favoriteTips")
+                            }
+                        }
+                ) {
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = description,
                         modifier = Modifier
-                            .size(10.dp)
-                            .background(MaterialTheme.colorScheme.error, CircleShape)
-                    )
-                }
+                            .size(if (isSelected) 32.dp else 28.dp)
+                        )
+
+                    if (description == notification && hasUnreadNotifications) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .background(MaterialTheme.colorScheme.error, CircleShape)
+                        )
+                    }
             }
         }
     }
