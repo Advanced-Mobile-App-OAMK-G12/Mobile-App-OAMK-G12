@@ -111,8 +111,6 @@ class PostViewModel @Inject constructor(
                     } else  it
                 }
                 _posts.value = updatedList
-                Log.d("SavedCount", "PostViewModel Saved count updated successfully")
-            } else {
                 Log.e("SavedCount", "PostViewModel Error updating saved count")
             }
         }
