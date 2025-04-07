@@ -1,6 +1,9 @@
 package com.example.advancedandroidcourse.di
 
+import com.example.advancedandroidcourse.data.repository.CommentRepository
+import com.example.advancedandroidcourse.data.repository.FirestoreNotificationRepository
 import com.example.advancedandroidcourse.data.repository.FirestoreUserRepository
+import com.example.advancedandroidcourse.data.repository.NotificationRepository
 import com.example.advancedandroidcourse.data.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,4 +48,12 @@ object FirebaseModule {
         return FirestoreUserRepository(auth, firestore, storage)
     }
 
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(
+        firestore: FirebaseFirestore,
+        commentRepository: CommentRepository
+    ): NotificationRepository {
+        return FirestoreNotificationRepository(firestore, commentRepository)
+    }
 }

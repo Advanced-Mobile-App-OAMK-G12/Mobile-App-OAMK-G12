@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.composables.TopBar
+import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @Composable
 fun HomeScreen(
@@ -35,6 +36,10 @@ fun HomeScreen(
 
 //    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
+    val listState = rememberLazyListState()
+
+    val notificationViewModel: NotificationViewModel = hiltViewModel()
+    val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
 
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
@@ -46,14 +51,19 @@ fun HomeScreen(
         topBar = {
             TopBar(
                 navController = navController,
-                modifier = Modifier.padding(top = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
                 )
         },
         //        BottomBar
         bottomBar = {
-            BottomBar(navController = navController)
+            BottomBar(
+                navController = navController,
+                modifier = Modifier.fillMaxWidth(),
+                hasUnreadNotifications = hasUnreadNotifications,
+            )
         }
-
     ) { innerPadding ->
 //        PostsList
         Column(

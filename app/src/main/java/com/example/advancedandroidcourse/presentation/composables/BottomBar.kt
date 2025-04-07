@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import com.example.advancedandroidcourse.R
 @Composable
 fun BottomBar (
     navController: NavHostController,
+    hasUnreadNotifications: Boolean,
     modifier: Modifier = Modifier
     ) {
     val home = stringResource(R.string.home)
@@ -65,6 +68,8 @@ fun BottomBar (
                         add -> navController.navigate("postScreen")
                         profile -> navController.navigate("profile")
                         home -> navController.navigate("home")
+                        notification -> navController.navigate("notifications")
+                        saved -> navController.navigate("favoriteTips")
                     }
                 },
                 modifier = Modifier
@@ -99,6 +104,14 @@ fun BottomBar (
                     modifier = Modifier
                         .size(if (isSelected) 32.dp else 28.dp)
                     )
+
+                if (description == notification && hasUnreadNotifications) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .background(MaterialTheme.colorScheme.error, CircleShape)
+                    )
+                }
             }
         }
     }

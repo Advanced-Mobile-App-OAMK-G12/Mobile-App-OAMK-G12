@@ -77,7 +77,8 @@ class AuthViewModel @Inject constructor(
                             "reason" to "",
                             "bannedUntil" to null
                         ),
-                        "createdAt" to Timestamp.now()
+                        "createdAt" to Timestamp.now(),
+                        "lastViewedNotifications" to Timestamp.now()
                     )
                     firestore.collection("users").document(userId)
                         .set(userMap)
