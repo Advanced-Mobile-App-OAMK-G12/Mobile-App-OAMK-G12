@@ -25,6 +25,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.advancedandroidcourse.R
@@ -121,20 +122,18 @@ fun BottomBar (
                             }
                         }
                 ) {
+                    val iconId = if (description == notification && hasUnreadNotifications) {
+                        R.drawable.notifications_unread
+                    } else {
+                        icon
+                    }
                     Icon(
-                        painter = painterResource(id = icon),
+                        painter = painterResource(id = iconId),
                         contentDescription = description,
                         modifier = Modifier
-                            .size(if (isSelected) 32.dp else 28.dp)
+                            .size(if (isSelected) 32.dp else 28.dp),
+                        tint = Color.Unspecified
                     )
-
-                    if (description == notification && hasUnreadNotifications) {
-                        Box(
-                            modifier = Modifier
-                                .size(10.dp)
-                                .background(MaterialTheme.colorScheme.error, CircleShape)
-                        )
-                    }
 
                 }
             }
