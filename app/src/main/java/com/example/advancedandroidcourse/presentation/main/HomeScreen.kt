@@ -36,7 +36,6 @@ fun HomeScreen(
 
 //    Collect posts from ViewModel
     val posts by postViewModel.posts.collectAsState(emptyList())
-    val listState = rememberLazyListState()
 
     val notificationViewModel: NotificationViewModel = hiltViewModel()
     val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
@@ -51,10 +50,7 @@ fun HomeScreen(
         topBar = {
             TopBar(
                 navController = navController,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp)
-                )
+            )
         },
         //        BottomBar
         bottomBar = {
@@ -63,25 +59,20 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 hasUnreadNotifications = hasUnreadNotifications,
             )
-        }
-    ) { innerPadding ->
+        },
+    ) { _ ->
 //        PostsList
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(innerPadding),
-//                .padding(top = 4.dp),
-
-//            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(0.dp)
+            ,horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .fillMaxWidth(),
-//                    .padding(4.dp),
-                contentPadding = PaddingValues(bottom = 56.dp),
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

@@ -1,6 +1,9 @@
 package com.example.advancedandroidcourse.presentation.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -14,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,19 +41,14 @@ fun TopBar(
 
     var selectedTab by remember { mutableStateOf("DISCOVER") }
 
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(76.dp)
-    )
-    {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .align(Alignment.BottomCenter)
-            ,
-            verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 16.dp)
+            .padding(top =36.dp)
+            .height(42.dp)
+            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
+        verticalAlignment = Alignment.CenterVertically,
         ) {
 //        Logo
             Image(
@@ -60,55 +59,42 @@ fun TopBar(
 
 //        Navbutton in the middle
             Row(
-                modifier = Modifier
+                modifier = modifier
                     .weight(1f)
                     .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                TextButton(
-                    onClick = { selectedTab = "HOT" },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.mainTextColor
-                    )
-                ) {
-                    Text(
-                        "HOT",
-                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                    )
-                }
-
-                TextButton(
-                    onClick = { selectedTab == "DISCOVER" },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.mainTextColor
-                    )
-                ) {
-                    Text(
-                        "DISCOVER",
-                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                    )
-                }
-
-                TextButton(
-                    onClick = { selectedTab == "DISCOVER" },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.mainTextColor
-                    )
-                ) {
-                    Text(
-                        "LATEST",
-                        fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                        fontWeight = if (selectedTab == "HOT") FontWeight.Bold else FontWeight.Normal
-                    )
+                listOf("HOT", "DISCOVER", "LATEST").forEach { tab ->
+                    Box(
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ){ selectedTab = tab }
+                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                    ) {
+                        Text(
+                            text = tab,
+                            fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
+                            fontWeight = if (selectedTab == "HOT") FontWeight.Bold
+                                else FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.mainTextColor
+                        )
+                    }
                 }
             }
 
 //        SearchButton
-            IconButton(onClick = {
-                navController.navigate("search")
-            }) {
+            Box(
+                modifier = modifier
+                    .size(28.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ){
+                        navController.navigate("search")
+                    },
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = "Search",
@@ -116,5 +102,5 @@ fun TopBar(
                 )
             }
         }
-    }
+
 }
