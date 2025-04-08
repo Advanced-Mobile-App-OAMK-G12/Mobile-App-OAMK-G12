@@ -1,5 +1,6 @@
 package com.example.advancedandroidcourse.presentation.main
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ fun HomeScreen(
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
+        Log.d("HomeScreen", "homeScreen loaded")
     }
 
     Scaffold(
@@ -60,7 +62,7 @@ fun HomeScreen(
                 hasUnreadNotifications = hasUnreadNotifications,
             )
         },
-    ) { _ ->
+    ) { innerPadding ->
 //        PostsList
         Column(
             modifier = modifier
@@ -72,7 +74,7 @@ fun HomeScreen(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp),
+                    .padding(innerPadding),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

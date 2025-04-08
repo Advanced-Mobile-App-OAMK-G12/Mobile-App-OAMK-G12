@@ -2,9 +2,11 @@ package com.example.advancedandroidcourse.presentation.postDetails
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +44,8 @@ import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.comment.CommentItem
 import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
+import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
+import com.example.advancedandroidcourse.presentation.composables.SaveIcon
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +65,7 @@ fun PostDetailsScreen(
 ) {
 
     val viewModel: PostDetailsViewModel = hiltViewModel()
+
     val postDetails = viewModel.postDetails.value
 
     val context = LocalContext.current
@@ -73,6 +78,8 @@ fun PostDetailsScreen(
     LaunchedEffect(tipId) {
         viewModel.getPostDetails(tipId)
         viewModel.getComments(tipId)
+        viewModel.checkIfSaved(tipId)
+        viewModel.fetchSavedCount(tipId)
     }
 
     if (postDetails != null) {
@@ -82,10 +89,10 @@ fun PostDetailsScreen(
         Column (
             modifier = Modifier.padding(start = 6.dp, top = 8.dp)
         ) {
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
-            ){
+            ) {
                 IconButton(onClick = {
                     navController.popBackStack()
                 }) {
@@ -180,6 +187,20 @@ fun PostDetailsScreen(
             LazyColumn {
                 items(comments) { commentDetails ->
                     CommentItem(commentDetails)
+                }
+            }
+
+            Row {
+//                FavoriteButton
+
+
+//                SaveButton
+                Column{
+                    SaveIcon(
+                        isSaved = viewModel.isSaved.value,
+                        onToggleSaved = { viewModel.toggleSaveTip(tipId) }
+                    )
+                    Text(text = "${viewModel.savedCount.value ?: 0}")
                 }
             }
         }

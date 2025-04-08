@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.advancedandroidcourse.data.model.Post
+import com.example.advancedandroidcourse.data.repository.PostRepository
 import com.example.advancedandroidcourse.data.repository.SaveTipsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

@@ -13,6 +13,7 @@ import com.example.advancedandroidcourse.data.model.CommentDetails
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.repository.CommentRepository
 import com.example.advancedandroidcourse.data.repository.PostRepository
+import com.example.advancedandroidcourse.data.repository.SaveTipsRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class PostDetailsViewModel @Inject constructor(
     private val postRepository: PostRepository,
     private val commentRepository: CommentRepository,
+    private val savedTipsRepository: SaveTipsRepository
 ): ViewModel() {
 
     private val _postDetails = mutableStateOf<PostDetails?>(null)
@@ -34,6 +36,12 @@ class PostDetailsViewModel @Inject constructor(
 
     private val _comments = MutableStateFlow<List<CommentDetails>>(emptyList())
     val comments: StateFlow<List<CommentDetails>> = _comments.asStateFlow()
+
+    private val _isSaved = mutableStateOf(false)
+    val isSaved: State<Boolean> = _isSaved
+
+    private val _savedCount = mutableStateOf(0)
+    val savedCount: State<Int> = _savedCount
 
     fun getPostDetails(tipId: String) {
 
@@ -64,5 +72,31 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
+    fun toggleSaveTip(tipId: String) {
+        viewModelScope.launch {
+            if (_isSaved.value) {
+                savedTipsRepository.removeSavedTip(tipId)
+                _isSaved.value = false
+            } else {
+                savedTipsRepository.saveTip(tipId)
+                _isSaved.value = true
+            }
+        }
+    }
 
+    fun checkIfSaved(tipId: String) {
+        viewModelScope.launch {
+            try {
+                _isSaved.value = savedTipsRepository.isSaved(tipId)
+            } catch (e: Exception) {
+                Log.e("PostDetailsViewModel", "checkIfSaved error: ${e.message}")
+            }
+        }
+    }
+
+    fun  fetchSavedCount(tipId: String) {
+        viewModelScope.launch {
+            _savedCount.value = savedTipsRepository.getSavedCount(tipId)
+        }
+    }
 }
