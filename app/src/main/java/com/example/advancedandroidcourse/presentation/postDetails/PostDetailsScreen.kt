@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.R
@@ -75,14 +76,6 @@ fun PostDetailsScreen(
     }
 
     val postDetails = PostDeatilsViewModel.postDetails.value
-
-    if (postDetails != null) {
-        Log.d("PostDetailsScreen", "postDetails.post.id: ${postDetails.post.id}")
-    } else {
-        Log.d("PostDetailsScreen", "Loading or post details is null")
-    }
-
-    val postViewModel: PostViewModel = hiltViewModel()
 
     val context = LocalContext.current
 
@@ -206,15 +199,16 @@ fun PostDetailsScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    val isFavorited by remember { mutableStateOf(postDetails.post.savedCount > 0) }
+                    val isFavorited = postDetails.post.savedCount > 0
 
                     FavoriteIcon(
                         isFavorited = isFavorited,
                         onToggleFavorited ={
+                            Log.d("PostDetailsScreen", "FavoriteIcon clicked. isFavorited=$isFavorited, savedCount=${postDetails.post.savedCount}")
                             val newSavedCount = if (isFavorited) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
 
-                            postViewModel.updateSavedCount(postDetails.post.id, newSavedCount)
+                            PostDeatilsViewModel.updateFavoriteCount(postDetails.post.id, newSavedCount)
                         }
                     )
                 }

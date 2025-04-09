@@ -46,8 +46,8 @@ fun TopBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(top =36.dp)
-            .height(42.dp)
-            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
+            .height(42.dp),
+//            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
         verticalAlignment = Alignment.CenterVertically,
         ) {
 //        Logo

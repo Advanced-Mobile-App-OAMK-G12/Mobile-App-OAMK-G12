@@ -179,6 +179,7 @@ class PostRepository @Inject constructor(
 
         postsRef.update("savedCount", newSavedCount)
             .addOnSuccessListener {
+                Log.d("PostRepository", "Successfully updated savedCount")
                 onComplete(true)
             }
             .addOnFailureListener { exception ->
@@ -193,7 +194,7 @@ class PostRepository @Inject constructor(
         return try {
 
             val postDoc = firestore.collection("tips").document(tipId).get().await()
-            val post = postDoc.toObject(Post::class.java)
+            val post = postDoc.toObject(Post::class.java)?.copy(id = postDoc.id)
 
             val userDoc = firestore.collection("users").document(post?.userId ?: "").get().await()
             val user = userDoc.toObject(User::class.java)
