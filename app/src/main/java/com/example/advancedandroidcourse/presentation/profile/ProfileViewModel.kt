@@ -21,10 +21,6 @@ class ProfileViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
 
-    // 收藏的 tips
-    private val _favoriteTips = MutableStateFlow<List<Tip>>(emptyList())
-    val favoriteTips: StateFlow<List<Tip>> = _favoriteTips
-
     // 自己发布的 tips
     private val _postedTips = MutableStateFlow<List<Tip>>(emptyList())
     val postedTips: StateFlow<List<Tip>> = _postedTips
@@ -39,7 +35,6 @@ class ProfileViewModel @Inject constructor(
 
     init {
         loadUserProfile()
-        loadFavorites()
         loadPostedTips()
     }
 
@@ -56,15 +51,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun loadFavorites() {
-        viewModelScope.launch {
-            try {
-                _favoriteTips.value = userRepository.getUserFavorites()
-            } catch (e: Exception) {
-                _error.value = "Failed to load favorites: ${e.message}"
-            }
-        }
-    }
 
     fun loadPostedTips() {
         viewModelScope.launch {

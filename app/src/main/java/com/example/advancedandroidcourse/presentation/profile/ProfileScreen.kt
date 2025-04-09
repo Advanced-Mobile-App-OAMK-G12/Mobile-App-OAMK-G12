@@ -8,14 +8,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -51,9 +53,7 @@ fun ProfileScreen(
     authViewModel: AuthViewModel
 ) {
     val user by viewModel.user.collectAsState()
-    val favorites by viewModel.favoriteTips.collectAsState()
     val posts by viewModel.postedTips.collectAsState()
-    var selectedTab by remember { mutableStateOf("posts") }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -175,73 +175,51 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Toggle Buttons with text
+            // Posts tab title with icon
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { selectedTab = "posts" }
-                ) {
-                    Icon(
-                        Icons.Default.PostAdd,
-                        contentDescription = "My Posts",
-                        tint = if (selectedTab == "posts") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-                    Text("Posts", style = MaterialTheme.typography.bodySmall)
-                }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { selectedTab = "favorites" }
-                ) {
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = "Favorites",
-                        tint = if (selectedTab == "favorites") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-                    Text("Favorites", style = MaterialTheme.typography.bodySmall)
-                }
+                Icon(
+                    imageVector = Icons.Default.PostAdd,
+                    contentDescription = "My Posts",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Posts", style = MaterialTheme.typography.bodySmall)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Tips List
-            val tipsToShow = if (selectedTab == "posts") posts else favorites
-
-            if (tipsToShow.isEmpty()) {
+            // Posts Grid
+            if (posts.isEmpty()) {
                 Text("No tips to show.")
             } else {
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     contentPadding = PaddingValues(bottom = 64.dp)
                 ) {
-                    items(tipsToShow) { tip ->
+                    items(posts.size) { index ->
+                        val tip = posts[index]
                         user?.let { currentUser ->
                             val postDetails = PostDetails(post = tip.toPost(), user = currentUser)
-                            if (selectedTab == "posts") {
-                                MyPostItem(
-                                    postDetails = postDetails,
-                                    navController = navController,
-                                    onDelete = { viewModel.deletePost(tip.id) }
-                                )
-
-                            } else {
-                                PostItem(
-                                    postDetails = postDetails,
-                                    showAuthorInfo = true,
-                                    onToggleFavorited = {},
-                                    navController = navController
-                                )
-                            }
+                            MyPostItem(
+                                postDetails = postDetails,
+                                navController = navController,
+                                onDelete = { viewModel.deletePost(tip.id) }
+                            )
                         }
                     }
                 }
             }
         }
     }
+}
 
     /*@Composable
     fun TipCard(tip: Tip) {
@@ -255,27 +233,36 @@ fun ProfileScreen(
             }
         }
     }*/
-}
+
 @Composable
 fun MyPostItem(
     postDetails: PostDetails,
     navController: NavController,
     onDelete: () -> Unit
 ) {
-    Column {
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+    ) {
         PostItem(
             postDetails = postDetails,
             showAuthorInfo = false,
             onToggleFavorited = {},
             navController = navController
         )
-        Button(
-            onClick = { onDelete() },
+
+        IconButton(
+            onClick = onDelete,
             modifier = Modifier
-                .align(Alignment.End)
-                .padding(end = 12.dp)
+                .align(Alignment.BottomEnd)
+                .padding(6.dp)
+                .size(28.dp)
         ) {
-            Text("Delete")
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete Tip",
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
