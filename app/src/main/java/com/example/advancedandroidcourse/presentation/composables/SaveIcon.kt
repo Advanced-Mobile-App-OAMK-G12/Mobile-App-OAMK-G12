@@ -35,7 +35,7 @@ fun SaveIcon(
         Icon(
             painter = painterResource(id = if (isSaved) R.drawable.save_filled else R.drawable.save),
             contentDescription = "Save",
-            tint = Color.Blue
+            tint = Color.Yellow
         )
     }
 }

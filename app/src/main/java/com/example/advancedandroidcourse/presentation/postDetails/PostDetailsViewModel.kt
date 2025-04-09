@@ -81,6 +81,8 @@ class PostDetailsViewModel @Inject constructor(
                 savedTipsRepository.saveTip(tipId)
                 _isSaved.value = true
             }
+
+            fetchSavedCount(tipId)
         }
     }
 
