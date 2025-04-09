@@ -44,7 +44,6 @@ fun HomeScreen(
 //    Ensure posts init when HomeScreen is displayed
     LaunchedEffect(Unit) {
         postViewModel.getPosts()
-        Log.d("HomeScreen", "homeScreen loaded")
     }
 
     Scaffold(
@@ -80,12 +79,12 @@ fun HomeScreen(
             ) {
                 items(posts.size) { index ->
                     val postDetails = posts[index]
-                    val isSaved = postDetails.post.savedCount > 0
+                    val isFavorited = postDetails.post.savedCount > 0
 
                     PostItem(
                         postDetails = postDetails,
-                        onToggleSaved = {
-                            val newSavedCount = if (isSaved) postDetails.post.savedCount - 1
+                        onToggleFavorited = {
+                            val newSavedCount = if (isFavorited) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
 
                             postViewModel.updateSavedCount(postDetails.post.id, newSavedCount)

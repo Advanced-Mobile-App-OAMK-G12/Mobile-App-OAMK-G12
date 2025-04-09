@@ -20,3 +20,7 @@ val ColorScheme.BackgroundColor: Color
 val ColorScheme.HighlightColor: Color
     @Composable
     get() = HighlightColor
+
+val ColorScheme.LogoColor: Color
+    @Composable
+    get() = LogoColor

@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import okhttp3.internal.isSensitiveHeader
 import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
@@ -106,9 +107,20 @@ class PostRepository @Inject constructor(
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
 
+//              Check if current user liked the tip
+//                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+//
+//                val savedDoc = firestore.collection("savedTips")
+//                    .document("$currentUserId-${post.id}")
+//                    .get()
+//                    .await()
+//
+//                val isSavedByCurrentUser = savedDoc.exists()
+
                 PostDetails(
                     post = post,
-                    user = user ?: User(name = "Unknown", image = "")
+                    user = user ?: User(name = "Unknown", image = ""),
+//                    isSavedByCurrentUser = isSavedByCurrentUser
                 )
             }
         } catch (e: Exception) {
@@ -139,9 +151,20 @@ class PostRepository @Inject constructor(
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
 
+                //              Check if current user liked the tip
+//                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+//
+//                val savedDoc = firestore.collection("savedTips")
+//                    .document("$currentUserId-${post.id}")
+//                    .get()
+//                    .await()
+//
+//                val isSavedByCurrentUser = savedDoc.exists()
+
                 PostDetails(
                     post = post,
-                    user = user ?: User(name = "Unknown", image = "")
+                    user = user ?: User(name = "Unknown", image = ""),
+//                    isSavedByCurrentUser = isSavedByCurrentUser
                 )
             }
         } catch (e: Exception) {

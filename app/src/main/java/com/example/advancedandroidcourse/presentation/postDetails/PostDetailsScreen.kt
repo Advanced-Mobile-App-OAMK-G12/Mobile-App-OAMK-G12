@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
 import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.SaveIcon
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
+import com.example.advancedandroidcourse.presentation.main.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,24 +65,33 @@ fun PostDetailsScreen(
     tipId: String,
     navController: NavController,
 ) {
+    val PostDeatilsViewModel: PostDetailsViewModel = hiltViewModel()
 
-    val viewModel: PostDetailsViewModel = hiltViewModel()
+    LaunchedEffect(tipId) {
+        PostDeatilsViewModel.getPostDetails(tipId)
+        PostDeatilsViewModel.getComments(tipId)
+        PostDeatilsViewModel.checkIfSaved(tipId)
+        PostDeatilsViewModel.fetchSavedCount(tipId)
+    }
 
-    val postDetails = viewModel.postDetails.value
+    val postDetails = PostDeatilsViewModel.postDetails.value
+
+    if (postDetails != null) {
+        Log.d("PostDetailsScreen", "postDetails.post.id: ${postDetails.post.id}")
+    } else {
+        Log.d("PostDetailsScreen", "Loading or post details is null")
+    }
+
+    val postViewModel: PostViewModel = hiltViewModel()
 
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     SnackbarHost(hostState = snackbarHostState)
 
-    val comments by viewModel.comments.collectAsState()
+    val comments by PostDeatilsViewModel.comments.collectAsState()
 
-    LaunchedEffect(tipId) {
-        viewModel.getPostDetails(tipId)
-        viewModel.getComments(tipId)
-        viewModel.checkIfSaved(tipId)
-        viewModel.fetchSavedCount(tipId)
-    }
+
 
     if (postDetails != null) {
         val images = postDetails.post.images
@@ -180,7 +191,7 @@ fun PostDetailsScreen(
             PostCommentInput(
                 tipId = tipId,
                 onCommentAdded = {
-                    viewModel.getComments(tipId)
+                    PostDeatilsViewModel.getComments(tipId)
                 }
             )
 
@@ -192,16 +203,32 @@ fun PostDetailsScreen(
 
             Row {
 //                FavoriteButton
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    val isFavorited by remember { mutableStateOf(postDetails.post.savedCount > 0) }
 
+                    FavoriteIcon(
+                        isFavorited = isFavorited,
+                        onToggleFavorited ={
+                            val newSavedCount = if (isFavorited) postDetails.post.savedCount - 1
+                                else postDetails.post.savedCount + 1
+
+                            postViewModel.updateSavedCount(postDetails.post.id, newSavedCount)
+                        }
+                    )
+                }
 
 //                SaveButton
-                Column{
-                    SaveIcon(
-                        isSaved = viewModel.isSaved.value,
-                        onToggleSaved = { viewModel.toggleSaveTip(tipId) }
-                    )
-                    Text(text = "${viewModel.savedCount.value ?: 0}")
-                }
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    SaveIcon(
+//                        isSaved = viewModel.isSaved.value,
+//                        onToggleSaved = { viewModel.toggleSaveTip(tipId) }
+//                    )
+//                    Text(text = "${viewModel.savedCount.value ?: 0}")
+//                }
             }
         }
     }

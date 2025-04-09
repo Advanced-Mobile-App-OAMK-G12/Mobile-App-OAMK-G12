@@ -22,8 +22,8 @@ import com.example.advancedandroidcourse.R
 @Composable
 fun FavoriteIcon(
     modifier: Modifier = Modifier,
-    isSaved: Boolean,
-    onToggleSaved: () -> Unit
+    isFavorited: Boolean,
+    onToggleFavorited: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -33,12 +33,12 @@ fun FavoriteIcon(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onToggleSaved
+                onClick = onToggleFavorited
             ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-                painter = painterResource(id = if (isSaved) R.drawable.favorite_filled else R.drawable.favorite),
+                painter = painterResource(id = if (isFavorited) R.drawable.favorite_filled else R.drawable.favorite),
                 contentDescription = "Like",
                 tint = Color.Red
         )

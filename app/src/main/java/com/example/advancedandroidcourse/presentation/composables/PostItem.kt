@@ -37,8 +37,8 @@ import java.nio.file.WatchEvent
 fun PostItem(
     postDetails: PostDetails,
     showAuthorInfo: Boolean,
-    onToggleSaved: () -> Unit,
-    navController: NavController
+    onToggleFavorited: () -> Unit,
+    navController: NavController,
 ) {
 
     Column (
@@ -75,8 +75,8 @@ fun PostItem(
             AuthorInfo(
                 userAvatar = postDetails.user.image,
                 userName = postDetails.user.name,
-                isSaved = postDetails.post.savedCount > 0,
-                onToggleSaved = onToggleSaved
+                isFavorited = postDetails.post.savedCount > 0,
+                onToggleFavorited = onToggleFavorited
             )
         }
 

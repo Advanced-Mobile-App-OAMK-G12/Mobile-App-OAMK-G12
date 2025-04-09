@@ -232,7 +232,7 @@ fun ProfileScreen(
                                 PostItem(
                                     postDetails = postDetails,
                                     showAuthorInfo = true,
-                                    onToggleSaved = {},
+                                    onToggleFavorited = {},
                                     navController = navController
                                 )
                             }
@@ -266,7 +266,7 @@ fun MyPostItem(
         PostItem(
             postDetails = postDetails,
             showAuthorInfo = false,
-            onToggleSaved = {},
+            onToggleFavorited = {},
             navController = navController
         )
         Button(

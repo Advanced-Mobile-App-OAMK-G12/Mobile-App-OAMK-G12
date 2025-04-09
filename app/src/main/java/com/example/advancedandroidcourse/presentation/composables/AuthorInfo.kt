@@ -20,8 +20,8 @@ import coil.compose.rememberImagePainter
 fun AuthorInfo(
     userAvatar: String,
     userName: String,
-    isSaved: Boolean,
-    onToggleSaved: () -> Unit
+    isFavorited: Boolean,
+    onToggleFavorited: () -> Unit
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -39,6 +39,6 @@ fun AuthorInfo(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        FavoriteIcon(Modifier, isSaved, onToggleSaved)
+        FavoriteIcon(Modifier, isFavorited, onToggleFavorited)
     }
 }
