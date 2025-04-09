@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -50,6 +51,7 @@ import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.SaveIcon
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
+import com.example.advancedandroidcourse.ui.theme.MainTextColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,143 +90,170 @@ fun PostDetailsScreen(
         val images = postDetails.post.images
         val pagerState = rememberPagerState { images.size }
 
-        Column (
-            modifier = Modifier.padding(start = 6.dp, top = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = "Back To HomeScreen",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+                modifier = Modifier.padding(start = 6.dp, top = 8.dp)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
                 ) {
-//                    AuthorInfo
-                    Image(
-                        painter = rememberImagePainter(postDetails.user.image),
-                        contentDescription = "Author Avatar",
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = postDetails.user.name,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-
-//                ShareButton
-                IconButton(onClick = {
-                    shareContent(tipId, context)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        snackbarHostState.showSnackbar("Post link copied!")
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = "Back To HomeScreen",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.share),
-                        contentDescription = "Share Post",
-                        modifier = Modifier.size(24.dp)
-                    )
                 }
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        //                    AuthorInfo
+                        Image(
+                            painter = rememberImagePainter(postDetails.user.image),
+                            contentDescription = "Author Avatar",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = postDetails.user.name,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
 
-//          PostImage
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            ) { page ->
-                Image(
-                    painter = rememberImagePainter(images[page]),
-                    contentDescription = "Post Image",
+                    //                ShareButton
+                    IconButton(onClick = {
+                        shareContent(tipId, context)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            snackbarHostState.showSnackbar("Post link copied!")
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.share),
+                            contentDescription = "Share Post",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                //          PostImage
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(250.dp)
+                ) { page ->
+                    Image(
+                        painter = rememberImagePainter(images[page]),
+                        contentDescription = "Post Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //          PostDetails
+                Text(
+                    text = postDetails.post.title,
+                    fontWeight = FontWeight.Bold
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-//          PostDetails
-            Text(
-                text = postDetails.post.title,
-                fontWeight = FontWeight.Bold
-            )
+                Text(text = postDetails.post.content)
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Text(text = postDetails.post.content)
+                Text(
+                    text = postDetails.post.timestamp.formatToDate(),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                //            Comments
+                PostCommentInput(
+                    tipId = tipId,
+                    onCommentAdded = {
+                        PostDeatilsViewModel.getComments(tipId)
+                    }
+                )
 
-            Text(
-                text = postDetails.post.timestamp.formatToDate(),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-//            Comments
-            PostCommentInput(
-                tipId = tipId,
-                onCommentAdded = {
-                    PostDeatilsViewModel.getComments(tipId)
+                LazyColumn {
+                    items(comments) { commentDetails ->
+                        CommentItem(commentDetails)
+                    }
                 }
-            )
 
-            LazyColumn {
-                items(comments) { commentDetails ->
-                    CommentItem(commentDetails)
-                }
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    //FavoriteButton
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val isFavorited = postDetails.post.savedCount > 0
 
-            Row {
-//                FavoriteButton
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    val isFavorited = postDetails.post.savedCount > 0
-
-                    FavoriteIcon(
-                        isFavorited = isFavorited,
-                        onToggleFavorited ={
-                            Log.d("PostDetailsScreen", "FavoriteIcon clicked. isFavorited=$isFavorited, savedCount=${postDetails.post.savedCount}")
-                            val newSavedCount = if (isFavorited) postDetails.post.savedCount - 1
+                        FavoriteIcon(
+                            isFavorited = isFavorited,
+                            onToggleFavorited = {
+                                Log.d(
+                                    "PostDetailsScreen",
+                                    "FavoriteIcon clicked. isFavorited=$isFavorited, savedCount=${postDetails.post.savedCount}"
+                                )
+                                val newSavedCount = if (isFavorited) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
 
-                            PostDeatilsViewModel.updateFavoriteCount(postDetails.post.id, newSavedCount)
-                        }
-                    )
-                    Text(text = "${postDetails?.post?.savedCount ?: 0}")
-                }
+                                PostDeatilsViewModel.updateFavoriteCount(
+                                    postDetails.post.id,
+                                    newSavedCount
+                                )
+                            }
+                        )
+                        Text(text = "${postDetails?.post?.savedCount ?: 0}")
+                    }
 
-//                SaveButton
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    SaveIcon(
-                        isSaved = PostDeatilsViewModel.isSaved.value,
-                        onToggleSaved = {
-                            PostDeatilsViewModel.toggleSaveTip(tipId)
-                        }
+                    //SaveButton
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SaveIcon(
+                            isSaved = PostDeatilsViewModel.isSaved.value,
+                            onToggleSaved = {
+                                PostDeatilsViewModel.toggleSaveTip(tipId)
+                            }
+                        )
+                        Text(text = "${PostDeatilsViewModel.savedCount.value ?: 0}")
+                    }
+
+                    //CommentIcon
+                    Icon(
+                        painter = painterResource(id = R.drawable.comment),
+                        contentDescription = "Comment",
+                        modifier = Modifier.size(24.dp),
+                        tint = MainTextColor
                     )
-                    Text(text = "${PostDeatilsViewModel.savedCount.value ?: 0}")
                 }
             }
+            }
         }
-    }
+
 }
