@@ -68,13 +68,6 @@ fun PostDetailsScreen(
 ) {
     val PostDeatilsViewModel: PostDetailsViewModel = hiltViewModel()
 
-    LaunchedEffect(tipId) {
-        PostDeatilsViewModel.getPostDetails(tipId)
-        PostDeatilsViewModel.getComments(tipId)
-        PostDeatilsViewModel.checkIfSaved(tipId)
-        PostDeatilsViewModel.fetchSavedCount(tipId)
-    }
-
     val postDetails = PostDeatilsViewModel.postDetails.value
 
     val context = LocalContext.current
@@ -84,7 +77,12 @@ fun PostDetailsScreen(
 
     val comments by PostDeatilsViewModel.comments.collectAsState()
 
-
+    LaunchedEffect(tipId) {
+        PostDeatilsViewModel.getPostDetails(tipId)
+        PostDeatilsViewModel.getComments(tipId)
+        PostDeatilsViewModel.checkIfSaved(tipId)
+        PostDeatilsViewModel.fetchSavedCount(tipId)
+    }
 
     if (postDetails != null) {
         val images = postDetails.post.images
@@ -211,18 +209,21 @@ fun PostDetailsScreen(
                             PostDeatilsViewModel.updateFavoriteCount(postDetails.post.id, newSavedCount)
                         }
                     )
+                    Text(text = "${postDetails?.post?.savedCount ?: 0}")
                 }
 
 //                SaveButton
-//                Column(
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ){
-//                    SaveIcon(
-//                        isSaved = viewModel.isSaved.value,
-//                        onToggleSaved = { viewModel.toggleSaveTip(tipId) }
-//                    )
-//                    Text(text = "${viewModel.savedCount.value ?: 0}")
-//                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    SaveIcon(
+                        isSaved = PostDeatilsViewModel.isSaved.value,
+                        onToggleSaved = {
+                            PostDeatilsViewModel.toggleSaveTip(tipId)
+                        }
+                    )
+                    Text(text = "${PostDeatilsViewModel.savedCount.value ?: 0}")
+                }
             }
         }
     }

@@ -107,16 +107,6 @@ class PostRepository @Inject constructor(
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
 
-//              Check if current user liked the tip
-//                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-//
-//                val savedDoc = firestore.collection("savedTips")
-//                    .document("$currentUserId-${post.id}")
-//                    .get()
-//                    .await()
-//
-//                val isSavedByCurrentUser = savedDoc.exists()
-
                 PostDetails(
                     post = post,
                     user = user ?: User(name = "Unknown", image = ""),
@@ -150,16 +140,6 @@ class PostRepository @Inject constructor(
                 Log.d("PostRepository", "PostRepository Post timestamp: ${post.timestamp}")
                 val userSnapshot = firestore.collection("users").document(post.userId).get().await()
                 val user = userSnapshot.toObject(User::class.java)
-
-                //              Check if current user liked the tip
-//                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-//
-//                val savedDoc = firestore.collection("savedTips")
-//                    .document("$currentUserId-${post.id}")
-//                    .get()
-//                    .await()
-//
-//                val isSavedByCurrentUser = savedDoc.exists()
 
                 PostDetails(
                     post = post,
@@ -212,4 +192,15 @@ class PostRepository @Inject constructor(
         }
     }
 
+    suspend fun getFavoriteCount(postId: String): Int {
+        try {
+            val postRef = firestore.collection("tips").document(postId)
+            val documentSnapshot = postRef.get().await()
+
+            return documentSnapshot.getLong("favoriteCount")?.toInt() ?: 0
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error fetching favoriteCount from Firestore: ${e.message}")
+            return 0
+        }
+    }
 }

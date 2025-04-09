@@ -72,17 +72,28 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
+    fun fetchFavoriteCount(tipId: String) {
+        viewModelScope.launch {
+            try {
+                val favoriteCount = postRepository.getFavoriteCount(tipId)
+
+                val current = _postDetails.value
+                if (current != null && current.post.id == tipId) {
+                    _postDetails.value = current.copy(post = current.post.copy(savedCount = favoriteCount))
+                }
+            } catch (e: Exception) {
+                Log.e("PostDetailsViewModel", "Error fetching favoriteCount: ")
+            }
+        }
+    }
+
     fun updateFavoriteCount(postId: String, newCount: Int) {
         Log.d("PostDetailsViewModel", "Updating favorite count: $newCount for postId=$postId")
         postRepository.updateSavedCount(postId, newCount) { success ->
             if (success) {
                 val current = _postDetails.value
-                Log.d("PostDetailsViewModel", "Before update, savedCount=${current?.post?.savedCount}")
                 if (current != null && current.post.id == postId) {
                     _postDetails.value = current.copy(post = current.post.copy(savedCount = newCount))
-                    Log.d("PostDetailsViewModel", "Updated savedCount to $newCount")
-                } else {
-                    Log.e("PostDetailsViewModel", "Failed to update savedCount in repo")
                 }
             }
         }
