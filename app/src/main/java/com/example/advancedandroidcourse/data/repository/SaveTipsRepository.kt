@@ -63,15 +63,32 @@ class SaveTipsRepository @Inject constructor(
 
     }
 
-    fun getSaveTips(onResult: (List<Post>) -> Unit) {
-        firestore.collection("tips")
-            .orderBy("savedCount", Query.Direction.DESCENDING)
+    //Get only the tips saved by the current user
+    suspend fun getSavedTipsForCurrentUser(): List<Post> {
+        val userId = auth.currentUser?.uid ?: return emptyList()
+
+        //Get all saved tip IDs for this user
+        val savedTipsSnapshot = firestore.collection("savedTips")
+            .whereEqualTo("userId", userId)
             .get()
-            .addOnSuccessListener { snapshot ->
-                val tips = snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Post::class.java)?.takeIf { it.title != null }?.copy(id = doc.id)
-                }
-                onResult(tips)
+            .await()
+
+        val tipIds = savedTipsSnapshot.documents.mapNotNull { it.getString("tipId") }
+
+        if (tipIds.isEmpty()) return emptyList()
+
+        val tips = mutableListOf<Post>()
+        val tipsCollection = firestore.collection("tips")
+
+        tipIds.forEach { tipId ->
+            val doc = tipsCollection.document(tipId).get().await()
+            doc.toObject(Post::class.java)?.let { post ->
+                tips.add(post.copy(id = doc.id))
             }
+        }
+
+        return tips
     }
+
+
 }

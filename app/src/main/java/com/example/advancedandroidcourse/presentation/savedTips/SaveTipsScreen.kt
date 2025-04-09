@@ -13,14 +13,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
-import com.example.advancedandroidcourse.presentation.composables.SearchBar
 import com.example.advancedandroidcourse.presentation.composables.TipCard
 import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
@@ -29,7 +26,7 @@ fun SaveTipsScreen(
     navController: NavHostController,
     viewModel: SaveTipsViewModel = hiltViewModel()
 ) {
-    var searchQuery by remember { mutableStateOf("") }
+    val searchQuery by remember { mutableStateOf("") }
 
     val filteredTips = viewModel.tipList.filter {
         it.title.contains(searchQuery, ignoreCase = true)
@@ -45,12 +42,6 @@ fun SaveTipsScreen(
                 top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
             )
     ) {
-        /*SearchBar(
-            iconRes = R.drawable.search,
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            onSearchClick = {}
-        ) */
 
         LazyColumn (
             modifier = Modifier
