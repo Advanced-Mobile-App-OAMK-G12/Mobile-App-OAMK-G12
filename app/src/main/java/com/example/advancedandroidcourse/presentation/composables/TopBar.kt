@@ -75,8 +75,8 @@ fun TopBar(
                     ) {
                         Text(
                             text = tab,
-                            fontSize = if (selectedTab == "HOT") 16.sp else 14.sp,
-                            fontWeight = if (selectedTab == "HOT") FontWeight.Bold
+                            fontSize = if (selectedTab == tab) 16.sp else 14.sp,
+                            fontWeight = if (selectedTab == tab) FontWeight.Bold
                                 else FontWeight.Normal,
                             color = MaterialTheme.colorScheme.mainTextColor
                         )

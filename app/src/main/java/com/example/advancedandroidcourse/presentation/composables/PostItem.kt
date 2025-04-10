@@ -67,7 +67,6 @@ fun PostItem(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = postDetails.post.title)
-            Text(text = postDetails.post.content)
         }
 
 //  Display author's information
