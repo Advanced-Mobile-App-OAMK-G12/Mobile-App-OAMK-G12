@@ -50,10 +50,10 @@ class SearchRepository @Inject constructor() {
 
     suspend fun searchTips(query: String): List<Tip> {
         return try {
-            db.collection("tips")
-                .orderBy("title")
-                .startAt(query)
-                .endAt( query + '\uf8ff')
+            val result = db.collection("tips")
+                //.orderBy("title")
+                //.startAt(query)
+                //.endAt( query + '\uf8ff')
                 .get()
                 .await()
                 .documents
@@ -67,6 +67,9 @@ class SearchRepository @Inject constructor() {
                         tags = it.get("tags") as? List<String> ?: emptyList()
                     )
                 }
+
+            //Filter results client-side using Lowecase comparison
+            result.filter { it.title.contains(query, ignoreCase = true) }
 
         } catch (e: Exception) {
             emptyList()
