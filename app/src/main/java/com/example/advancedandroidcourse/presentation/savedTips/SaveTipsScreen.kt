@@ -52,7 +52,7 @@ fun SaveTipsScreen(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 9.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
