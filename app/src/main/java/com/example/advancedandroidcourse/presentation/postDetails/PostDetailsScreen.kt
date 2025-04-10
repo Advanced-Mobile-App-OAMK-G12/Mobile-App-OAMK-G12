@@ -250,7 +250,7 @@ fun PostDetailsScreen(
                         painter = painterResource(id = R.drawable.comment),
                         contentDescription = "Comment",
                         modifier = Modifier.size(24.dp),
-                        tint = LogoColor
+                        tint = MainTextColor
                     )
                 }
             }
