@@ -90,47 +90,20 @@ class PostRepository @Inject constructor(
                 onComplete(false) }
     }
 
-//    implement scrolling function in HomeScreen
-    suspend fun getInitialPosts(): List<PostDetails> {
-        return try {
-            val querySnapshot = firestore.collection("tips")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(10)
-                .get()
-                .await()
-
-            Log.d("PostRepository", "PostRepository Get Initial posts: ${querySnapshot.documents.size}")
-
-            querySnapshot.documents.mapNotNull { document ->
-                val post = document.toObject(Post::class.java)?.copy(id = document.id)
-                    ?: return@mapNotNull null
-                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
-                val user = userSnapshot.toObject(User::class.java)
-
-                PostDetails(
-                    post = post,
-                    user = user ?: User(name = "Unknown", image = ""),
-//                    isSavedByCurrentUser = isSavedByCurrentUser
-                )
-            }
-        } catch (e: Exception) {
-            Log.e("PostRepository", "PostRepository Error fetching initial posts", e)
-            emptyList()
-        }
-    }
-
-
-    //    Fetching PostDetails
-    suspend fun getPosts(lastTimestamp: Timestamp): List<PostDetails> {
+//        Fetching PostDetails
+    suspend fun getLatestPosts(lastTimestamp: Timestamp?): List<PostDetails> {
         Log.d("PostRepository", "PostRepository Last timestamp: $lastTimestamp")
 
         return try {
-            val querySnapshot = firestore.collection("tips")
+            var query = firestore.collection("tips")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .startAfter(lastTimestamp)
                 .limit(10)
-                .get()
-                .await()
+
+            if (lastTimestamp != null) {
+                query = query.startAfter(lastTimestamp)
+            }
+
+            val querySnapshot = query.get().await()
 
             Log.d("PostRepository", "PostRepository Documents size: ${querySnapshot.documents.size}")
 
@@ -144,7 +117,6 @@ class PostRepository @Inject constructor(
                 PostDetails(
                     post = post,
                     user = user ?: User(name = "Unknown", image = ""),
-//                    isSavedByCurrentUser = isSavedByCurrentUser
                 )
             }
         } catch (e: Exception) {

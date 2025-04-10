@@ -36,18 +36,16 @@ import com.example.advancedandroidcourse.ui.theme.mainTextColor
 @Composable
 fun TopBar(
     navController: NavHostController,
+    selectedTab: String,
+    onTabSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
-
-    var selectedTab by remember { mutableStateOf("DISCOVER") }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(top =36.dp)
             .height(42.dp),
-//            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
         verticalAlignment = Alignment.CenterVertically,
         ) {
 //        Logo
@@ -67,10 +65,9 @@ fun TopBar(
                 listOf("HOT", "DISCOVER", "LATEST").forEach { tab ->
                     Box(
                         modifier = Modifier
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ){ selectedTab = tab }
+                            .clickable{
+                                onTabSelected(tab)
+                            }
                             .padding(vertical = 8.dp, horizontal = 12.dp)
                     ) {
                         Text(
