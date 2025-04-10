@@ -30,9 +30,9 @@ class PostViewModel @Inject constructor(
 //    Getting more posts
     private var lastTimestamp: Timestamp? = null
 
-    init {
-        getInitialPosts()
-    }
+//    init {
+//        loadLatestPosts()
+//    }
 
     fun createPost(title: String, content: String, imageUris: List<Uri>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
 
@@ -55,47 +55,11 @@ class PostViewModel @Inject constructor(
         }
     }
 
-
-//    Initial Posts
-    fun getInitialPosts() {
+//Get LatestPosts
+    fun loadLatestPosts() {
         viewModelScope.launch {
-            try {
-                val newPosts = postRepository.getInitialPosts()
-                if (newPosts.isNotEmpty()) {
-                    lastTimestamp = newPosts.last().post.timestamp
-                    Log.d("PostViewModel", "PostViewModel Fetched initial posts: ${newPosts.size}")
-                    _posts.value = newPosts
-                }
-            } catch (e: Exception) {
-                Log.e("PostViewModel", "PostViewModel Error fetching initial posts", e)
-            }
-        }
-
-    }
-
-    //    Fetching data
-    fun getPosts() {
-        Log.d("PostViewModel", "Calling getPosts()")
-        // If lastTimestamp is null, it means we need to load initial posts
-        if (lastTimestamp == null) {
-            getInitialPosts()
-            return
-        }
-
-        viewModelScope.launch {
-            try {
-                val morePosts = postRepository.getPosts(lastTimestamp!!)
-                Log.d("PostViewModel", "Fetched more posts: ${morePosts.size}")
-
-                if (morePosts.isNotEmpty()) {
-                    lastTimestamp = morePosts.last().post.timestamp
-                    _posts.value = _posts.value + morePosts
-                } else {
-                    Log.d("PostViewModel", "No more posts available.")
-                }
-            } catch (e: Exception) {
-                Log.e("PostViewModel", "Error fetching more posts", e)
-            }
+            val posts = postRepository.getLatestPosts(null)
+            _posts.value = posts
         }
     }
 
