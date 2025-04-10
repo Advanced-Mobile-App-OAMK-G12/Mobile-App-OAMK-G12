@@ -2,6 +2,7 @@ package com.example.advancedandroidcourse.presentation.composables
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,15 +61,19 @@ fun TipItem(tip: Tip, navController: NavController) {
                 Spacer(modifier = Modifier.width(12.dp))
             }
 
-            Text(
-                text = tip.title,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
-                    //.padding(8.dp)
-                   // .clickable {
-                    //    Log.d("TipItem", "Clicked on tip: ${tip.id}")
-                    //    navController.navigate("postDetails/${tip.id}")//Navigate to PostDetails Screen
-            )
+            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                Text(
+                    text = tip.title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                tip.timestamp?.let {
+                    Text(
+                        text = it.formatToDate(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+            }
         }
     }
 

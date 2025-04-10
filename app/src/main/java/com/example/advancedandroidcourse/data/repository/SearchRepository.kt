@@ -51,9 +51,6 @@ class SearchRepository @Inject constructor() {
     suspend fun searchTips(query: String): List<Tip> {
         return try {
             val result = db.collection("tips")
-                //.orderBy("title")
-                //.startAt(query)
-                //.endAt( query + '\uf8ff')
                 .get()
                 .await()
                 .documents
@@ -64,7 +61,8 @@ class SearchRepository @Inject constructor() {
                         content = it.getString("content") ?: "",
                         images = it.get("images") as? List<String> ?: emptyList(),
                         userId = it.getString("userId") ?: "",
-                        tags = it.get("tags") as? List<String> ?: emptyList()
+                        tags = it.get("tags") as? List<String> ?: emptyList(),
+                        timestamp = it.getTimestamp("timestamp")
                     )
                 }
 
