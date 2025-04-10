@@ -65,7 +65,10 @@ fun TopBar(
                 listOf("HOT", "DISCOVER", "LATEST").forEach { tab ->
                     Box(
                         modifier = Modifier
-                            .clickable{
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ){
                                 onTabSelected(tab)
                             }
                             .padding(vertical = 8.dp, horizontal = 12.dp)
