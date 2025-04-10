@@ -51,6 +51,7 @@ import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.SaveIcon
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
+import com.example.advancedandroidcourse.ui.theme.LogoColor
 import com.example.advancedandroidcourse.ui.theme.MainTextColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -249,7 +250,7 @@ fun PostDetailsScreen(
                         painter = painterResource(id = R.drawable.comment),
                         contentDescription = "Comment",
                         modifier = Modifier.size(24.dp),
-                        tint = MainTextColor
+                        tint = LogoColor
                     )
                 }
             }
