@@ -76,7 +76,11 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation ("com.google.accompanist:accompanist-pager:0.32.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.32.0")
-
+    implementation(libs.play.services.auth)
+    // add the dependencies for the Credential Manager libraries and specify their versions
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     kapt(libs.hilt.compiler)
 
 }
