@@ -1,11 +1,16 @@
 package com.example.advancedandroidcourse.presentation.auth
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,12 +34,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavController
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.CredentialManagerCallback
+import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.example.advancedandroidcourse.R
+
+
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier,navController: NavController,authViewModel: AuthViewModel) {
@@ -59,6 +75,7 @@ fun LoginScreen(modifier: Modifier = Modifier,navController: NavController,authV
             else -> Unit
         }
     }
+
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -112,6 +129,50 @@ fun LoginScreen(modifier: Modifier = Modifier,navController: NavController,authV
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        Button(onClick = {
+            val credentialManager = CredentialManager.create(context)
+
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)  // 不限制只能用已登录的 Google 账号
+                .setServerClientId(context.getString(R.string.default_web_client_id))  // Firebase console 的 web client id
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            credentialManager.getCredentialAsync(
+                context,
+                request,
+                null,  // 不需要 CancellationSignal
+                context.mainExecutor,
+                object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
+                    override fun onResult(result: GetCredentialResponse) {
+                        val googleIdTokenCredential = result.credential as? GoogleIdTokenCredential
+                        val googleIdToken = googleIdTokenCredential?.idToken
+
+                        if (googleIdToken != null) {
+                            authViewModel.loginWithGoogle(googleIdToken)
+                        } else {
+                            Toast.makeText(context, "Google ID Token is null", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onError(e: GetCredentialException) {
+                        Toast.makeText(context, "Google Sign-In failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }) {
+            Icon(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = "Google Icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Login with Google")
+        }
+
+
         TextButton(onClick = {
             navController.navigate("signup")
         }) {
@@ -121,4 +182,3 @@ fun LoginScreen(modifier: Modifier = Modifier,navController: NavController,authV
     }
 
 }
-// THIS IS NOT USED IN THIS DEMO APP, because the demo has only one view

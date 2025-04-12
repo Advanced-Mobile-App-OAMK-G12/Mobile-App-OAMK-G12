@@ -21,6 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AdvancedAndroidCourse"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

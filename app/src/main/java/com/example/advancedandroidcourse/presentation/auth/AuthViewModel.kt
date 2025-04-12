@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -100,6 +101,42 @@ class AuthViewModel @Inject constructor(
         _authState.value = AuthState.Unauthenticated
     }
 
+    fun loginWithGoogle(idToken: String) {
+        _authState.value = AuthState.Loading
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val currentUser = auth.currentUser ?: return@addOnCompleteListener
+                    val uid = currentUser.uid
+                    val userDoc = firestore.collection("users").document(uid)
+
+                    userDoc.get().addOnSuccessListener { document ->
+                        if (!document.exists()) {
+                            val userMap = hashMapOf(
+                                "name" to (currentUser.displayName ?: ""),
+                                "email" to (currentUser.email ?: ""),
+                                "image" to (currentUser.photoUrl?.toString() ?: ""),
+                                "bio" to "",
+                                "banStatus" to hashMapOf(
+                                    "isBanned" to false,
+                                    "reason" to "",
+                                    "bannedUntil" to null
+                                ),
+                                "createdAt" to Timestamp.now(),
+                                "lastViewedNotifications" to Timestamp.now()
+                            )
+                            userDoc.set(userMap)
+                        }
+                    }
+
+                    _authState.value = AuthState.Authenticated
+                } else {
+                    _authState.value = AuthState.Error(task.exception?.message ?: "Google login failed")
+                }
+            }
+    }
 
 }
 
