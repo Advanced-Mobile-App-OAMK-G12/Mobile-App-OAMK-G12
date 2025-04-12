@@ -7,7 +7,7 @@
 /captures/
 /.externalNativeBuild/
 /cxx/
-
+**/google-services.json
 # MacOS- ja Windows-spesifiset tiedostot
 .DS_Store
 Thumbs.db
