@@ -42,6 +42,7 @@ fun HomeScreen(
     LaunchedEffect(selectedTab) {
         when(selectedTab) {
             "LATEST" -> postViewModel.loadLatestPosts()
+            "HOT" -> postViewModel.loadHotPosts()
         }
     }
 
