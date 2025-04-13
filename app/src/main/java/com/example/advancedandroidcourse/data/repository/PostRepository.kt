@@ -168,15 +168,15 @@ class PostRepository @Inject constructor(
         }
     }
 
-    suspend fun getFavoriteCount(postId: String): Int {
-        try {
-            val postRef = firestore.collection("tips").document(postId)
-            val documentSnapshot = postRef.get().await()
-
-            return documentSnapshot.getLong("favoriteCount")?.toInt() ?: 0
-        } catch (e: Exception) {
-            Log.e("PostRepository", "Error fetching favoriteCount from Firestore: ${e.message}")
-            return 0
-        }
-    }
+//    suspend fun getFavoriteCount(postId: String): Int {
+//        try {
+//            val postRef = firestore.collection("tips").document(postId)
+//            val documentSnapshot = postRef.get().await()
+//
+//            return documentSnapshot.getLong("favoriteCount")?.toInt() ?: 0
+//        } catch (e: Exception) {
+//            Log.e("PostRepository", "Error fetching favoriteCount from Firestore: ${e.message}")
+//            return 0
+//        }
+//    }
 }

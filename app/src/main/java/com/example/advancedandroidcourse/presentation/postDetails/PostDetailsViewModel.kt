@@ -2,26 +2,19 @@ package com.example.advancedandroidcourse.presentation.postDetails
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.advancedandroidcourse.data.model.Comment
 import com.example.advancedandroidcourse.data.model.CommentDetails
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.repository.CommentRepository
 import com.example.advancedandroidcourse.data.repository.PostRepository
 import com.example.advancedandroidcourse.data.repository.SaveTipsRepository
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,6 +35,9 @@ class PostDetailsViewModel @Inject constructor(
 
     private val _savedCount = mutableStateOf(0)
     val savedCount: State<Int> = _savedCount
+
+    private val _commentCount = mutableStateOf(0)
+    val commentCount: State<Int> = _commentCount
 
     fun getPostDetails(tipId: String) {
 
@@ -72,20 +68,20 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
-    fun fetchFavoriteCount(tipId: String) {
-        viewModelScope.launch {
-            try {
-                val favoriteCount = postRepository.getFavoriteCount(tipId)
-
-                val current = _postDetails.value
-                if (current != null && current.post.id == tipId) {
-                    _postDetails.value = current.copy(post = current.post.copy(savedCount = favoriteCount))
-                }
-            } catch (e: Exception) {
-                Log.e("PostDetailsViewModel", "Error fetching favoriteCount: ")
-            }
-        }
-    }
+//    fun fetchFavoriteCount(tipId: String) {
+//        viewModelScope.launch {
+//            try {
+//                val favoriteCount = postRepository.getFavoriteCount(tipId)
+//
+//                val current = _postDetails.value
+//                if (current != null && current.post.id == tipId) {
+//                    _postDetails.value = current.copy(post = current.post.copy(savedCount = favoriteCount))
+//                }
+//            } catch (e: Exception) {
+//                Log.e("PostDetailsViewModel", "Error fetching favoriteCount: ")
+//            }
+//        }
+//    }
 
     fun updateFavoriteCount(postId: String, newCount: Int) {
         Log.d("PostDetailsViewModel", "Updating favorite count: $newCount for postId=$postId")
@@ -123,9 +119,15 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
-    fun  fetchSavedCount(tipId: String) {
+    fun fetchSavedCount(tipId: String) {
         viewModelScope.launch {
             _savedCount.value = savedTipsRepository.getSavedCount(tipId)
+        }
+    }
+
+    fun fetchCommentCount(tipId: String) {
+        viewModelScope.launch {
+            _commentCount.value = commentRepository.fetchCommentCount(tipId)
         }
     }
 }

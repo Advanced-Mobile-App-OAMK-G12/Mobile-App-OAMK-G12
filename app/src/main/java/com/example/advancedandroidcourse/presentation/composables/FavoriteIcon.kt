@@ -29,7 +29,7 @@ fun FavoriteIcon(
 
     Box(
         modifier = modifier
-            .size(24.dp)
+            .size(42.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -40,7 +40,8 @@ fun FavoriteIcon(
         Icon(
                 painter = painterResource(id = if (isFavorited) R.drawable.favorite_filled else R.drawable.favorite),
                 contentDescription = "Like",
-                tint = Color.Red
+                tint = Color.Red,
+                modifier = Modifier.size(32.dp)
         )
     }
 }
