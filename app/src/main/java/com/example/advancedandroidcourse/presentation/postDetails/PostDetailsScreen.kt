@@ -94,12 +94,12 @@ fun PostDetailsScreen(
         val pagerState = rememberPagerState { images.size }
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 72.dp)
+                    .padding(bottom = 68.dp)
             ) {
                 item{
                     Row(
@@ -213,7 +213,7 @@ fun PostDetailsScreen(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                    //FavoriteButton
+                //FavoriteButton
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -239,7 +239,7 @@ fun PostDetailsScreen(
                     Text(text = "${postDetails?.post?.savedCount ?: 0}")
                 }
 
-                    //SaveButton
+                //SaveButton
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
