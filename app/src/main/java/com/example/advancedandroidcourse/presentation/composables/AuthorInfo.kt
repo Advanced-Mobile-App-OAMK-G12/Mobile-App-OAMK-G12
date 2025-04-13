@@ -36,7 +36,7 @@ fun AuthorInfo(
             contentScale = ContentScale.Crop,
             contentDescription = "User Avatar",
             modifier = Modifier
-                .size(38.dp)
+                .size(32.dp)
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(8.dp))

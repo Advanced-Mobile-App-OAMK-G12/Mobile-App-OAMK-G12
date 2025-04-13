@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.model.User
+import com.google.api.QuotaLimit
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -150,6 +151,35 @@ class PostRepository @Inject constructor(
             emptyList()
         }
     }
+
+//    Get post randomly
+suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
+    return try {
+        val postsQuery = firestore.collection("tips")
+            .get()
+            .await()
+
+        val totalPosts = postsQuery.size()
+
+        val randomIndexes = ( 0 until totalPosts).shuffled().take(limit.toInt())
+        val randomPosts = randomIndexes.mapNotNull { index ->
+            val postDoc = postsQuery.documents.getOrNull(index) ?: return@mapNotNull null
+            val post = postDoc.toObject(Post::class.java)?.copy(id = postDoc.id)
+                ?: return@mapNotNull null
+
+            val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+            val user = userSnapshot.toObject(User::class.java)
+
+            PostDetails(
+                post = post,
+                user = user ?: User(name = "Unknown", image = ""),
+            )
+        }
+        randomPosts
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
 
 //    Update favoriteCount in Tips
     fun updateSavedCount(tipId: String, newSavedCount: Int, onComplete: (Boolean) -> Unit) {

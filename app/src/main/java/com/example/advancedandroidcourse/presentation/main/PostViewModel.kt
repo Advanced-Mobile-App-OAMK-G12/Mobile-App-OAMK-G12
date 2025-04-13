@@ -71,6 +71,14 @@ class PostViewModel @Inject constructor(
         }
     }
 
+//    Lost RandomPosts
+fun loadRandomPosts() {
+    viewModelScope.launch {
+        val randomPosts = postRepository.getRandomPosts()
+        _posts.value = randomPosts
+    }
+}
+
 
 
 //    Update savedCount

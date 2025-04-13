@@ -43,6 +43,7 @@ fun HomeScreen(
         when(selectedTab) {
             "LATEST" -> postViewModel.loadLatestPosts()
             "HOT" -> postViewModel.loadHotPosts()
+            "DISCOVER" -> postViewModel.loadRandomPosts()
         }
     }
 
