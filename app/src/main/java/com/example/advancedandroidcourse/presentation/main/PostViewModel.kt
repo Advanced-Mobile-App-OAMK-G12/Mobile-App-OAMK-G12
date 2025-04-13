@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.repository.PostRepository
+import com.example.advancedandroidcourse.data.repository.SaveTipsRepository
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,19 +21,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val savedTipsRepository: SaveTipsRepository
 ) : ViewModel() {
 
 
 //    Save posts fetching from firestore
     private val _posts = MutableStateFlow<List<PostDetails>>(emptyList())
     val posts: StateFlow<List<PostDetails>> = _posts.asStateFlow()
-//    Getting more posts
-    private var lastTimestamp: Timestamp? = null
 
-//    init {
-//        loadLatestPosts()
-//    }
+//    Fetch SavedCount
+    private val _savedCount = mutableStateOf(0)
+    val savedCount: State<Int> = _savedCount
 
     fun createPost(title: String, content: String, imageUris: List<Uri>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
 
@@ -63,6 +63,16 @@ class PostViewModel @Inject constructor(
         }
     }
 
+//    Load tips by savedCount
+    fun loadHotPosts() {
+        viewModelScope.launch {
+            val hotPosts = postRepository.getHotPosts()
+            _posts.value = hotPosts
+        }
+    }
+
+
+
 //    Update savedCount
     fun updateSavedCount(tipId: String, newSavedCount: Int) {
         Log.d("PostViewModel", "PostViewModel Updating saved count for post ID: $tipId with new value: $newSavedCount")
@@ -91,4 +101,11 @@ class PostViewModel @Inject constructor(
             _postDetails.value = result
         }
     }
+
+//    Fetch savedTipCount
+//    fun fetchSavedCount(tipId: String) {
+//        viewModelScope.launch {
+//            _savedTipCount.value = savedTipsRepository.getSavedCount(tipId)
+//        }
+//    }
 }

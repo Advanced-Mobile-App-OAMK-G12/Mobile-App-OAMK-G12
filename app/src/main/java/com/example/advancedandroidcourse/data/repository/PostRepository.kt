@@ -125,10 +125,33 @@ class PostRepository @Inject constructor(
         }
     }
 
-//    Get Hot Posts
-   
+//    Get posts by savedCount
+    suspend fun getHotPosts(): List<PostDetails> {
+        return try {
+            var query = firestore.collection("tips")
+                .orderBy("savedCount", Query.Direction.DESCENDING)
+                .limit(10)
 
+            val posts = query.get().await()
 
+            posts.documents.mapNotNull { document ->
+                val post = document.toObject(Post::class.java)?.copy(id = document.id)
+                    ?: return@mapNotNull null
+
+                val userSnapshot = firestore.collection("users").document(post.userId).get().await()
+                val user = userSnapshot.toObject(User::class.java)
+
+                PostDetails(
+                    post = post,
+                    user = user ?: User(name = "Unknown", image = ""),
+                )
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+//    Update favoriteCount in Tips
     fun updateSavedCount(tipId: String, newSavedCount: Int, onComplete: (Boolean) -> Unit) {
         val postsRef = firestore.collection("tips").document(tipId)
         Log.d("PostRepository", "Updating saved count for post ID: $tipId")

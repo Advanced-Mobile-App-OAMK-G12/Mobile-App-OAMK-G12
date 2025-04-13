@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -34,6 +35,7 @@ fun CommentItem(commentDetails: CommentDetails) {
         // User Avatar
         Image(
             painter = rememberImagePainter(user.image),
+            contentScale = ContentScale.Crop,
             contentDescription = "User Avatar",
             modifier = Modifier.size(40.dp).clip(CircleShape)
         )
