@@ -23,7 +23,8 @@ fun AuthorInfo(
     userAvatar: String,
     userName: String,
     isFavorited: Boolean,
-    onToggleFavorited: () -> Unit
+    onToggleFavorited: () -> Unit,
+    modifier: Modifier
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -40,7 +41,9 @@ fun AuthorInfo(
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = userName, fontWeight = FontWeight.Bold)
+        Text(
+            text = userName,
+            fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.weight(1f))
 
