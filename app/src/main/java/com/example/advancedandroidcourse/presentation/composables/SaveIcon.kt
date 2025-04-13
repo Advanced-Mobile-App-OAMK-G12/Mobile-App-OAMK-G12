@@ -26,7 +26,7 @@ fun SaveIcon(
 
     Box(
         modifier = modifier
-            .size(24.dp)
+            .size(42.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -37,7 +37,8 @@ fun SaveIcon(
         Icon(
             painter = painterResource(id = if (isSaved) R.drawable.save_filled else R.drawable.save),
             contentDescription = "Save",
-            tint = LogoColor
+            tint = LogoColor,
+            modifier = Modifier.size(32.dp)
         )
     }
 }

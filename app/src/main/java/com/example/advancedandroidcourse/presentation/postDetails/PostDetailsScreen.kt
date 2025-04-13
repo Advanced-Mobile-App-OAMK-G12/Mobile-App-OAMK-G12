@@ -87,6 +87,7 @@ fun PostDetailsScreen(
         PostDeatilsViewModel.getComments(tipId)
         PostDeatilsViewModel.checkIfSaved(tipId)
         PostDeatilsViewModel.fetchSavedCount(tipId)
+        PostDeatilsViewModel.fetchCommentCount(tipId)
     }
 
     if (postDetails != null) {
@@ -222,10 +223,6 @@ fun PostDetailsScreen(
                     FavoriteIcon(
                         isFavorited = isFavorited,
                         onToggleFavorited = {
-                            Log.d(
-                                "PostDetailsScreen",
-                                "FavoriteIcon clicked. isFavorited=$isFavorited, savedCount=${postDetails.post.savedCount}"
-                            )
                             val newSavedCount =
                                 if (isFavorited) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
@@ -259,9 +256,10 @@ fun PostDetailsScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.comment),
                         contentDescription = "Comment",
-                        modifier = Modifier.size(24.dp),
-                        tint = MainTextColor
+                        modifier = Modifier.size(32.dp),
+                        tint = MainTextColor,
                     )
+                    Text(text = "${PostDeatilsViewModel.commentCount.value ?: 0}")
                 }
             }
         }

@@ -76,4 +76,13 @@ class CommentRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchCommentCount(tipId: String): Int {
+        Log.d("CommentRepository", "Fetching comments for tipId=$tipId")
+        val snapshot = firestore.collection("comments")
+            .whereEqualTo("tipId", tipId)
+            .get()
+            .await()
+        return snapshot.size()
+    }
+
 }
