@@ -90,7 +90,7 @@ class PostRepository @Inject constructor(
                 onComplete(false) }
     }
 
-//        Fetching PostDetails
+//        Fetching LatestPosts
     suspend fun getLatestPosts(lastTimestamp: Timestamp?): List<PostDetails> {
         Log.d("PostRepository", "PostRepository Last timestamp: $lastTimestamp")
 
@@ -124,6 +124,10 @@ class PostRepository @Inject constructor(
             emptyList()
         }
     }
+
+//    Get Hot Posts
+   
+
 
     fun updateSavedCount(tipId: String, newSavedCount: Int, onComplete: (Boolean) -> Unit) {
         val postsRef = firestore.collection("tips").document(tipId)
