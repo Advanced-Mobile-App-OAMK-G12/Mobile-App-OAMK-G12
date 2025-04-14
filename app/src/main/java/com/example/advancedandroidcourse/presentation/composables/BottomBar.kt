@@ -57,18 +57,49 @@ fun BottomBar (
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(64.dp)
             .background(BackgroundColor),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items.forEach { (icon, description) ->
+        items.forEach { (defaultIcon, description) ->
 
-            val isSelected = currentRoute == description
-            val scale = remember { Animatable(1f) }
+            val isSelected = when (description) {
+                home -> currentRoute == "home"
+                saved -> currentRoute == "savedTips"
+                add -> currentRoute == "postScreen"
+                notification -> currentRoute == "notifications"
+                profile -> currentRoute?.startsWith("profile") == true
+                else -> false
+            }
 
-            IconButton(
-                onClick = {
+            val iconRes = when {
+                description == notification -> {
+                    if (hasUnreadNotifications) {
+                        if (isSelected) R.drawable.notification_wght
+                        else R.drawable.notifications_unread
+                    } else {
+                        if (isSelected) R.drawable.notification_wght
+                        else R.drawable.notification
+                }
+            }
+                isSelected -> when (description) {
+                    home -> R.drawable.home_wght
+                    saved -> R.drawable.save_wght
+                    profile -> R.drawable.account_wght
+                    add -> R.drawable.add_wght
+                    else -> defaultIcon
+                }
+                else -> defaultIcon
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
                     when (description) {
                         add -> navController.navigate("postScreen")
                         profile -> navController.navigate("profile")
@@ -76,68 +107,15 @@ fun BottomBar (
                         notification -> navController.navigate("notifications")
                         saved -> navController.navigate("savedTips")
                     }
-                },
-                modifier = Modifier
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                    }
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                scale.animateTo(1.2f)
-                                try {
-                                    this.awaitRelease()
-                                } catch (
-                                    _: Exception
-                                ) {
-                                }
-                                scale.animateTo(1f)
-                            }
-                        )
-                    }
-
+                }
             ) {
-                Box(
-                    modifier = Modifier
-                        .then(
-                            if (isSelected) {
-                                Modifier.border(2.dp, MaterialTheme.colorScheme.mainTextColor)
-                            } else {
-                                Modifier
-                            }
-                        )
-                        .pointerInput(Unit) {
-                            detectTapGestures(onPress = {})
-                        }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            when (description) {
-                                add -> navController.navigate("postScreen")
-                                profile -> navController.navigate("profile")
-                                home -> navController.navigate("home")
-                                notification -> navController.navigate("notifications")
-                                saved -> navController.navigate("savedTips")
-                            }
-                        }
-                ) {
-                    val iconId = if (description == notification && hasUnreadNotifications) {
-                        R.drawable.notifications_unread
-                    } else {
-                        icon
-                    }
                     Icon(
-                        painter = painterResource(id = iconId),
+                        painter = painterResource(id = iconRes),
                         contentDescription = description,
-                        modifier = Modifier
-                            .size(if (isSelected) 32.dp else 28.dp),
+                        modifier = Modifier.size(42.dp),
                         tint = Color.Unspecified
                     )
-
                 }
             }
         }
     }
-}
