@@ -112,7 +112,7 @@ fun BottomBar (
                     Icon(
                         painter = painterResource(id = iconRes),
                         contentDescription = description,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(48.dp),
                         tint = Color.Unspecified
                     )
                 }

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 val LogoColor = Color(0xFF0F3F6B)
 val MainTextColor = Color(0xFF112A46)
 val BackgroundColor = Color(0xFFF8F9FA)
-val HighlightColor  = Color(0xFFFF0505)
+val HighlightColor  = Color(0xFFEA3323)
 
 val ColorScheme.mainTextColor: Color
     @Composable
