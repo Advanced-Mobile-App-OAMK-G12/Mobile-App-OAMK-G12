@@ -50,6 +50,7 @@ import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.comment.CommentItem
 import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
+import com.example.advancedandroidcourse.presentation.composables.CommentIcon
 import com.example.advancedandroidcourse.presentation.composables.FavoriteIcon
 import com.example.advancedandroidcourse.presentation.composables.SaveIcon
 import com.example.advancedandroidcourse.presentation.composables.formatToDate
@@ -255,12 +256,10 @@ fun PostDetailsScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.comment),
-                        contentDescription = "Comment",
-                        modifier = Modifier.size(32.dp),
-                        tint = MainTextColor,
+                    CommentIcon(
+                        onClick = { }
                     )
+//
                     Text(text = "${PostDeatilsViewModel.commentCount.value ?: 0}")
                 }
             }
