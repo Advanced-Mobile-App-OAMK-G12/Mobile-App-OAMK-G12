@@ -52,15 +52,15 @@ fun TopBar(
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "easy Finn Logo",
-                modifier = Modifier.size(52.dp)
+                modifier = Modifier.size(62.dp)
             )
 
 //        Navbutton in the middle
             Row(
                 modifier = modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
                 listOf("HOT", "DISCOVER", "LATEST").forEach { tab ->
                     Box(
@@ -71,11 +71,11 @@ fun TopBar(
                             ){
                                 onTabSelected(tab)
                             }
-                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                            .padding(vertical = 8.dp, horizontal = 8.dp)
                     ) {
                         Text(
                             text = tab,
-                            fontSize = if (selectedTab == tab) 16.sp else 14.sp,
+                            fontSize = if (selectedTab == tab) 18.sp else 16.sp,
                             fontWeight = if (selectedTab == tab) FontWeight.Bold
                                 else FontWeight.Normal,
                             color = MaterialTheme.colorScheme.mainTextColor
@@ -87,7 +87,7 @@ fun TopBar(
 //        SearchButton
             Box(
                 modifier = modifier
-                    .size(28.dp)
+                    .size(32.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -98,7 +98,7 @@ fun TopBar(
                 Icon(
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = "Search",
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(32.dp)
                 )
             }
         }
