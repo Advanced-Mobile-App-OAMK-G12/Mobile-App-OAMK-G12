@@ -133,7 +133,7 @@ fun PostDetailsScreen(
                                 contentScale = ContentScale.Crop,
                                 contentDescription = "Author Avatar",
                                 modifier = Modifier
-                                    .size(28.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
