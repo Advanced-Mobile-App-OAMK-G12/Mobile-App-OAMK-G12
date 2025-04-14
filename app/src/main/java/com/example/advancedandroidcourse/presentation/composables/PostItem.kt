@@ -56,8 +56,8 @@ fun PostItem(
             .shadow(
                 4.dp,
                 shape = RoundedCornerShape(4.dp),
-                ambientColor = MainTextColor.copy(alpha = 0.1f),
-                spotColor = MainTextColor.copy(alpha = 0.3f)
+                ambientColor = MainTextColor.copy(alpha = 0.2f),
+                spotColor = MainTextColor.copy(alpha = 0.4f)
             )
             .clip(RoundedCornerShape(4.dp))
             .background(BackgroundColor)
