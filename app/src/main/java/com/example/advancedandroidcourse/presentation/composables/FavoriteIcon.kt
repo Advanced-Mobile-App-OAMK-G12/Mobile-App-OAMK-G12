@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.ui.theme.HighlightColor
 
 
 @Composable
@@ -40,7 +41,7 @@ fun FavoriteIcon(
         Icon(
                 painter = painterResource(id = if (isFavorited) R.drawable.favorite_filled else R.drawable.favorite),
                 contentDescription = "Like",
-                tint = Color.Red,
+                tint = HighlightColor,
                 modifier = Modifier.size(32.dp)
         )
     }
