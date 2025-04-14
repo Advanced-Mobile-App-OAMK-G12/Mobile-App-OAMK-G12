@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.ui.theme.BackgroundColor
 import com.example.advancedandroidcourse.ui.theme.mainTextColor
 
 @Composable
@@ -36,7 +37,7 @@ fun BottomBar (
     navController: NavHostController,
     hasUnreadNotifications: Boolean,
     modifier: Modifier = Modifier
-    ) {
+) {
     val home = stringResource(R.string.home)
     val saved = stringResource(R.string.saved)
     val add = stringResource(R.string.add)
@@ -57,7 +58,7 @@ fun BottomBar (
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
+            .background(BackgroundColor),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
