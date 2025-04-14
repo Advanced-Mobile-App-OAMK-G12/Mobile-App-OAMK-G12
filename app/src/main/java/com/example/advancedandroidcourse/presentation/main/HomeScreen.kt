@@ -1,7 +1,10 @@
 package com.example.advancedandroidcourse.presentation.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -48,6 +52,8 @@ fun HomeScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+
         //        TopBar
         topBar = {
             TopBar(
@@ -65,21 +71,13 @@ fun HomeScreen(
             )
         },
     ) { innerPadding ->
-//        PostsList
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(0.dp)
-            ,horizontalAlignment = Alignment.CenterHorizontally
-        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(innerPadding),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+                    .padding(0.dp)
+                ,contentPadding = PaddingValues(0.dp)
+          ) {
                 items(posts.size) { index ->
                     val postDetails = posts[index]
                     val isFavorited = postDetails.post.savedCount > 0
@@ -97,6 +95,5 @@ fun HomeScreen(
                     )
                 }
             }
-        }
     }
 }

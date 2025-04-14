@@ -38,6 +38,7 @@ import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
+import com.example.advancedandroidcourse.ui.theme.BackgroundColor
 import com.example.advancedandroidcourse.ui.theme.MainTextColor
 import java.nio.file.WatchEvent
 
@@ -51,7 +52,7 @@ fun PostItem(
 
     Column (
         modifier = Modifier
-            .padding(2.dp)
+            .padding(4.dp)
             .shadow(
                 4.dp,
                 shape = RoundedCornerShape(4.dp),
@@ -59,7 +60,7 @@ fun PostItem(
                 spotColor = MainTextColor.copy(alpha = 0.3f)
             )
             .clip(RoundedCornerShape(4.dp))
-            .background(Color.White)
+            .background(BackgroundColor)
     ) {
         Column (
             modifier = Modifier
