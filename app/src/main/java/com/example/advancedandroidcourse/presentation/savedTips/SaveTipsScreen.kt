@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
-import com.example.advancedandroidcourse.presentation.composables.TipCard
+import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 
 @Composable
@@ -41,8 +39,8 @@ fun SaveTipsScreen(
 ) {
     val searchQuery by remember { mutableStateOf("") }
 
-    val filteredTips = viewModel.tipList.filter {
-        it.title.contains(searchQuery, ignoreCase = true)
+    val filteredTips = viewModel.savedPosts.filter {
+        it.post.title.contains(searchQuery, ignoreCase = true)
     }
     val notificationViewModel: NotificationViewModel = hiltViewModel()
     val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
@@ -86,10 +84,13 @@ fun SaveTipsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(filteredTips) { post ->
-                TipCard(post = post) {
-                    navController.navigate("postDetails/${post.id}")
-                }
+            items(filteredTips) { postDetails ->
+                PostItem(
+                    postDetails = postDetails,
+                    showAuthorInfo = false,
+                    onToggleFavorited = {},
+                    navController = navController
+                )
             }
 
         }
