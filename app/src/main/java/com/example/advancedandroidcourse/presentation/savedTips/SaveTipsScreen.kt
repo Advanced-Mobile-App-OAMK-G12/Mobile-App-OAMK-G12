@@ -87,7 +87,7 @@ fun SaveTipsScreen(
             items(filteredTips) { postDetails ->
                 PostItem(
                     postDetails = postDetails,
-                    showAuthorInfo = false,
+                    showAuthorInfo = true,
                     onToggleFavorited = {},
                     navController = navController
                 )
