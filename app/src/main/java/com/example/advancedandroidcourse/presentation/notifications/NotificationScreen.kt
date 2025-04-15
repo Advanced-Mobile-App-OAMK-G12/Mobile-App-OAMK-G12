@@ -56,10 +56,23 @@ fun NotificationScreen(
                 }
 
                 else -> {
-                    LazyColumn(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 16.dp, bottom = 64.dp)
+                    ) {
+                        Text(
+                            text = "Received Comments",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 32.dp, bottom = 8.dp)
+                        )
+
+                    LazyColumn(
+                        contentPadding = innerPadding,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 8.dp)
                     ) {
                         items(notifications) { notification ->
                             NotificationItem(
@@ -72,6 +85,7 @@ fun NotificationScreen(
                 }
             }
         }
+    }
     }
 }
 
