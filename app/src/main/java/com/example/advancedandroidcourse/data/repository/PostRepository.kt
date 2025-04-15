@@ -32,8 +32,7 @@ class PostRepository @Inject constructor(
         return try {
             val imageUrls = mutableListOf<String>()
             for (imageUri in imageUris) {
-                //create a referance to Firebase storage
-                //val storageRef = storage.reference
+                //create a reference to Firebase storage
                 val imageRef =
                     storage.reference.child("images/${UUID.randomUUID()}.jpg") //save as a unique file name
                 imageRef.putFile(imageUri).await()
@@ -45,25 +44,6 @@ class PostRepository @Inject constructor(
             emptyList()
         }
     }
-
-
-               /* //upload image
-                val uploadTask = imageRef.putFile(imageUri)
-
-                //wait for the upload to complete
-                uploadTask.await()
-
-                //Get download URL
-                val downloadUrl = imageRef.downloadUrl.await()
-                imageUrls.add(downloadUrl.toString())
-            }
-            imageUrls //Return list of image URLs
-
-        } catch (e: Exception) {
-            // Handle errors during upload
-            emptyList()
-        }
-    }*/
     //Method to add post to Firestore
     fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
