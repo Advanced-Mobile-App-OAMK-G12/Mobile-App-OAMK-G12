@@ -81,7 +81,8 @@ fun PostItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(180.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = rememberImagePainter(postDetails.post.images[0]),
