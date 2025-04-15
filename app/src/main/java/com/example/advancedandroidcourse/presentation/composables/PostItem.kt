@@ -85,7 +85,7 @@ fun PostItem(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = rememberImagePainter(postDetails.post.images[0]),
+                    painter = rememberImagePainter(postDetails.post.images.firstOrNull() ?: "your_default_image_url"),
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
