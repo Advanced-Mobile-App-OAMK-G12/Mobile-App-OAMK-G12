@@ -44,6 +44,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.advancedandroidcourse.R
 
 
@@ -51,6 +52,7 @@ import com.example.advancedandroidcourse.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
+    navController: NavController,
     onBackClick: () -> Unit //Back navigation function
 
 ) {
@@ -77,7 +79,6 @@ fun PostScreen(
         "language & integration"
     )
     var selectedTags by remember { mutableStateOf(setOf<String>()) }
-    //var expanded by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -96,9 +97,6 @@ fun PostScreen(
             }
         }
 
-
-        //Spacer(modifier = Modifier.height(12.dp))
-
         item {
 
             //Image selection-using placeholder and coil for loading image
@@ -111,8 +109,6 @@ fun PostScreen(
                             .size(100.dp)
                             .background(Color.LightGray, RoundedCornerShape(12.dp))
                     )
-
-                    //Spacer(modifier = Modifier.width(12.dp))
                 }
                 //Image picker button
                 Box(
@@ -139,8 +135,6 @@ fun PostScreen(
             }
         }
 
-        //Spacer(modifier = Modifier.height(16.dp))
-
         item {
 
             //Title input
@@ -156,9 +150,6 @@ fun PostScreen(
                 Text("Title cannot be empty", color = Color.Red, fontSize = 14.sp)
             }
         }
-
-
-        //Spacer(modifier = Modifier.height(12.dp))
 
         item {
 
@@ -178,43 +169,6 @@ fun PostScreen(
                 Text("Content cannot be empty", color = Color.Red, fontSize = 14.sp)
             }
         }
-
-        //Spacer(modifier = Modifier.height(12.dp))
-
-        //Dropdown for selecting a tag
-        /* ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            OutlinedTextField(
-                value = selectedTag,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Select a #Tag") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
-                // trailingIcon = {
-                //    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                //}
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                tagOptions.forEach { tag ->
-                    DropdownMenuItem(
-                        text = { Text(tag) },
-                        onClick = {
-                            selectedTag = tag
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }*/
 
         item {
 
@@ -243,11 +197,6 @@ fun PostScreen(
             }
         }
 
-
-        //Spacer(modifier = Modifier.height(16.dp))
-
-
-
         item {
             //Post Button
             Button(
@@ -267,7 +216,10 @@ fun PostScreen(
                     ) { success ->
                         isPosting = false
                         if (success) {
-                            onBackClick()
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
                     }
 
