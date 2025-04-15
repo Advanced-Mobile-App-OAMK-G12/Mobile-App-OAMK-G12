@@ -1,6 +1,7 @@
 package com.example.advancedandroidcourse.presentation.comment
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -70,56 +72,69 @@ fun PostCommentInput(
 
     Box(
         modifier = modifier
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }
+            .fillMaxWidth()
+//            .pointerInput(Unit) {
+//                detectTapGestures(onTap = {
+//                    focusManager.clearFocus()
+//                })
+//            }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(BackgroundColor)
         ) {
-            TextField(
-                value = commentText,
-                onValueChange = { commentText = it },
-                label = { Text(stringResource(R.string.commentPlaceHolder)) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text
-                ),
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 6.dp, vertical = 6.dp)
-                    .height(48.dp)
-                    .focusRequester(focusRequester),
-                shape = RoundedCornerShape(50),
-                singleLine = false,
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.send),
-                        contentDescription = "Send Comment",
-                        modifier = Modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                if (commentText.isNotEmpty()) {
-                                    viewModel.addComment(tipId, commentText)
-                                    commentText = ""
-                                    onCommentAdded
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        focusManager.clearFocus()
+                    }
+            ) {
+                TextField(
+                    value = commentText,
+                    onValueChange = { commentText = it },
+                    label = { Text(stringResource(R.string.commentPlaceHolder)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 6.dp)
+                        .height(48.dp)
+                        .focusRequester(focusRequester),
+                    shape = RoundedCornerShape(50),
+                    singleLine = false,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.send),
+                            contentDescription = "Send Comment",
+                            modifier = Modifier
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    if (commentText.isNotEmpty()) {
+                                        viewModel.addComment(tipId, commentText)
+                                        commentText = ""
+                                        onCommentAdded
+                                    }
                                 }
-                            }
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = MainTextColor.copy(alpha = 0.1f),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedLabelColor = Color.Gray,
+                        unfocusedLabelColor = Color.Gray,
+                        cursorColor = Color.Black
                     )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MainTextColor.copy(alpha = 0.1f),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = Color.Gray,
-                    cursorColor = Color.Black
                 )
-            )
+            }
         }
     }
 }

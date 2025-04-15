@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.ui.theme.LogoColor
+import com.example.advancedandroidcourse.ui.theme.MainTextColor
 
 @Composable
 fun SaveIcon(
@@ -37,7 +38,7 @@ fun SaveIcon(
         Icon(
             painter = painterResource(id = if (isSaved) R.drawable.save_filled else R.drawable.save),
             contentDescription = "Save",
-            tint = LogoColor,
+            tint = MainTextColor,
             modifier = Modifier.size(32.dp)
         )
     }
