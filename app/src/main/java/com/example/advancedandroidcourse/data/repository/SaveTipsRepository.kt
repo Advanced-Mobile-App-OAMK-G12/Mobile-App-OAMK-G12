@@ -1,11 +1,12 @@
 package com.example.advancedandroidcourse.data.repository
 
-import android.util.Log
+
 import com.example.advancedandroidcourse.data.model.Post
+import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.model.SavedTips
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.example.advancedandroidcourse.data.model.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -64,7 +65,7 @@ class SaveTipsRepository @Inject constructor(
     }
 
     //Get only the tips saved by the current user
-    suspend fun getSavedTipsForCurrentUser(): List<Post> {
+    suspend fun getSavedTipsForCurrentUser(): List<PostDetails> {
         val userId = auth.currentUser?.uid ?: return emptyList()
 
         //Get all saved tip IDs for this user
@@ -77,17 +78,21 @@ class SaveTipsRepository @Inject constructor(
 
         if (tipIds.isEmpty()) return emptyList()
 
-        val tips = mutableListOf<Post>()
-        val tipsCollection = firestore.collection("tips")
 
-        tipIds.forEach { tipId ->
-            val doc = tipsCollection.document(tipId).get().await()
-            doc.toObject(Post::class.java)?.let { post ->
-                tips.add(post.copy(id = doc.id))
+        val tipsCollection = firestore.collection("tips")
+        val usersCollection = firestore.collection("users")
+
+        return tipIds.mapNotNull { tipId ->
+            val tipDoc = tipsCollection.document(tipId).get().await()
+            val post = tipDoc.toObject(Post::class.java)?.copy(id = tipDoc.id)
+
+            post?.let {
+                val userDoc = usersCollection.document(post.userId).get().await()
+                val user = userDoc.toObject(User::class.java)
+                if (user != null) PostDetails(post, user) else null
             }
         }
 
-        return tips
     }
 
 
