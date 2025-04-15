@@ -112,26 +112,38 @@ class AuthViewModel @Inject constructor(
                     val uid = currentUser.uid
                     val userDoc = firestore.collection("users").document(uid)
 
-                    userDoc.get().addOnSuccessListener { document ->
-                        if (!document.exists()) {
-                            val userMap = hashMapOf(
-                                "name" to (currentUser.displayName ?: ""),
-                                "email" to (currentUser.email ?: ""),
-                                "image" to (currentUser.photoUrl?.toString() ?: ""),
-                                "bio" to "",
-                                "banStatus" to hashMapOf(
-                                    "isBanned" to false,
-                                    "reason" to "",
-                                    "bannedUntil" to null
-                                ),
-                                "createdAt" to Timestamp.now(),
-                                "lastViewedNotifications" to Timestamp.now()
-                            )
-                            userDoc.set(userMap)
-                        }
-                    }
+                    userDoc.get()
+                        .addOnSuccessListener { document ->
+                            if (!document.exists()) {
+                                val userMap = hashMapOf(
+                                    "name" to (currentUser.displayName ?: ""),
+                                    "email" to (currentUser.email ?: ""),
+                                    "image" to (currentUser.photoUrl?.toString() ?: ""),
+                                    "bio" to "",
+                                    "banStatus" to hashMapOf(
+                                        "isBanned" to false,
+                                        "reason" to "",
+                                        "bannedUntil" to null
+                                    ),
+                                    "createdAt" to Timestamp.now(),
+                                    "lastViewedNotifications" to Timestamp.now()
+                                )
 
-                    _authState.value = AuthState.Authenticated
+                                userDoc.set(userMap)
+                                    .addOnSuccessListener {
+                                        _authState.value = AuthState.Authenticated
+                                    }
+                                    .addOnFailureListener { e ->
+                                        _authState.value = AuthState.Error("Firestore write error: ${e.message}")
+                                    }
+                            } else {
+                                _authState.value = AuthState.Authenticated
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            _authState.value = AuthState.Error("Firestore fetch error: ${e.message}")
+                        }
+
                 } else {
                     _authState.value = AuthState.Error(task.exception?.message ?: "Google login failed")
                 }
