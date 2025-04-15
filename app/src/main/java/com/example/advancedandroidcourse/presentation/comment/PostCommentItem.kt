@@ -37,7 +37,7 @@ fun CommentItem(commentDetails: CommentDetails) {
             painter = rememberImagePainter(user.image),
             contentScale = ContentScale.Crop,
             contentDescription = "User Avatar",
-            modifier = Modifier.size(40.dp).clip(CircleShape)
+            modifier = Modifier.size(32.dp).clip(CircleShape)
         )
 
         Spacer(modifier = Modifier.width(8.dp))

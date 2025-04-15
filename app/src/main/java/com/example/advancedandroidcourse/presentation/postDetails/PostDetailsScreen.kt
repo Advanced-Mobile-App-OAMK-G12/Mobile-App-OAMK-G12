@@ -102,7 +102,7 @@ fun PostDetailsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 68.dp)
+                    .padding(start = 8.dp, end = 8.dp, bottom = 68.dp)
             ) {
                 item{
                     Row(
@@ -133,7 +133,7 @@ fun PostDetailsScreen(
                                 contentScale = ContentScale.Crop,
                                 contentDescription = "Author Avatar",
                                 modifier = Modifier
-                                    .size(28.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -165,7 +165,7 @@ fun PostDetailsScreen(
                         state = pagerState,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(250.dp)
+                            .height(320.dp)
                     ) { page ->
                         Image(
                             painter = rememberImagePainter(images[page]),
@@ -176,10 +176,10 @@ fun PostDetailsScreen(
                     }
                 }
 
-//                Spacer(modifier = Modifier.height(16.dp))
-
                 //          PostDetails
                 item{
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = postDetails.post.title,
                         fontWeight = FontWeight.Bold
@@ -196,7 +196,7 @@ fun PostDetailsScreen(
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    //            Comments
+                    //Add comment
                     PostCommentInput(
                         tipId = tipId,
                         onCommentAdded = {
@@ -204,7 +204,6 @@ fun PostDetailsScreen(
                         }
                     )
                 }
-
                 items(comments) { commentDetails ->
                     CommentItem(commentDetails)
                 }
@@ -213,7 +212,7 @@ fun PostDetailsScreen(
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp),
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
