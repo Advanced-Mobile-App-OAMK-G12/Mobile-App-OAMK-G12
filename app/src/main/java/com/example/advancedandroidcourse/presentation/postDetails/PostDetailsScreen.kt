@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +86,9 @@ fun PostDetailsScreen(
     SnackbarHost(hostState = snackbarHostState)
 
     val comments by PostDeatilsViewModel.comments.collectAsState()
+
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutienScope = rememberCoroutineScope()
 
     LaunchedEffect(tipId) {
         PostDeatilsViewModel.getPostDetails(tipId)
@@ -199,6 +205,8 @@ fun PostDetailsScreen(
                     //Add comment
                     PostCommentInput(
                         tipId = tipId,
+                        modifier = Modifier
+                            .bringIntoViewRequester(bringIntoViewRequester),
                         onCommentAdded = {
                             PostDeatilsViewModel.getComments(tipId)
                         }
@@ -256,9 +264,12 @@ fun PostDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CommentIcon(
-                        onClick = { }
+                        onClick = {
+                            coroutienScope.launch {
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
                     )
-//
                     Text(text = "${PostDeatilsViewModel.commentCount.value ?: 0}")
                 }
             }

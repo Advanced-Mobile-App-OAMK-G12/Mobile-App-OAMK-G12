@@ -58,6 +58,7 @@ import java.nio.file.WatchEvent
 @Composable
 fun PostCommentInput(
     tipId: String,
+    modifier: Modifier = Modifier,
     onCommentAdded: () -> Unit,
 ) {
 
@@ -68,7 +69,7 @@ fun PostCommentInput(
     val focusManager = LocalFocusManager.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
