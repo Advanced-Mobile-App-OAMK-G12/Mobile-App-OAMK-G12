@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -103,117 +106,126 @@ fun PostDetailsScreen(
         val pagerState = rememberPagerState { images.size }
 
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 8.dp, end = 8.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 68.dp)
-            ) {
-                item{
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
+            Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .zIndex(2f),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
                     ) {
-                        IconButton(onClick = {
-                            navController.popBackStack()
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.back),
-                                contentDescription = "Back To HomeScreen",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            //                    AuthorInfo
-                            Image(
-                                painter = rememberImagePainter(postDetails.user.image),
-                                contentScale = ContentScale.Crop,
-                                contentDescription = "Author Avatar",
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = postDetails.user.name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-
-                        //                ShareButton
-                        IconButton(onClick = {
-                            shareContent(tipId, context)
-                            CoroutineScope(Dispatchers.Main).launch {
-                                snackbarHostState.showSnackbar("Post link copied!")
-                            }
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.share),
-                                contentDescription = "Share Post",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = "Back To HomeScreen",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
-
-                //          PostImage
-                item {
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(320.dp)
-                    ) { page ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 52.dp)
+                        .zIndex(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        //                    AuthorInfo
                         Image(
-                            painter = rememberImagePainter(images[page]),
-                            contentDescription = "Post Image",
+                            painter = rememberImagePainter(postDetails.user.image),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "Author Avatar",
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .size(32.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = postDetails.user.name,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    //                ShareButton
+                    IconButton(onClick = {
+                        shareContent(tipId, context)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            snackbarHostState.showSnackbar("Post link copied!")
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.share),
+                            contentDescription = "Share Post",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
 
-                //          PostDetails
-                item{
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = postDetails.post.title,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(text = postDetails.post.content)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = postDetails.post.timestamp.formatToDate(),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    //Add comment
-                    PostCommentInput(
-                        tipId = tipId,
-                        modifier = Modifier
-                            .bringIntoViewRequester(bringIntoViewRequester),
-                        onCommentAdded = {
-                            PostDeatilsViewModel.getComments(tipId)
+            Column {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 86.dp,bottom = 68.dp)
+                ) {
+                    //          PostImage
+                    item {
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(320.dp)
+                        ) { page ->
+                            Image(
+                                painter = rememberImagePainter(images[page]),
+                                contentDescription = "Post Image",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
                         }
-                    )
-                }
-                items(comments) { commentDetails ->
-                    CommentItem(commentDetails)
+                    }
+
+                    //          PostDetails
+                    item {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = postDetails.post.title,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(text = postDetails.post.content)
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = postDetails.post.timestamp.formatToDate(),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        //Add comment
+                        PostCommentInput(
+                            tipId = tipId,
+                            modifier = Modifier
+                                .bringIntoViewRequester(bringIntoViewRequester),
+                            onCommentAdded = {
+                                PostDeatilsViewModel.getComments(tipId)
+                            }
+                        )
+                    }
+                    items(comments) { commentDetails ->
+                        CommentItem(commentDetails)
+                    }
                 }
             }
 
