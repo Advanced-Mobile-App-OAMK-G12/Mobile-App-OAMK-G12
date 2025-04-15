@@ -46,6 +46,7 @@ fun NavGraph(navController: NavHostController,modifier: Modifier = Modifier,isUs
             }
         }
         composable("postScreen") {
+            val postViewModel: PostViewModel = hiltViewModel()
             PostScreen(
                 navController = navController,
                 onBackClick = { navController.popBackStack() }
