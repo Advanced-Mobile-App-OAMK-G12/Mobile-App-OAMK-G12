@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,8 +44,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,26 +82,27 @@ fun PostDetailsScreen(
     tipId: String,
     navController: NavController,
 ) {
-    val PostDeatilsViewModel: PostDetailsViewModel = hiltViewModel()
-
-    val postDetails = PostDeatilsViewModel.postDetails.value
+    val PostDetailsViewModel: PostDetailsViewModel = hiltViewModel()
+    val postDetails = PostDetailsViewModel.postDetails.value
 
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     SnackbarHost(hostState = snackbarHostState)
 
-    val comments by PostDeatilsViewModel.comments.collectAsState()
+    val comments by PostDetailsViewModel.comments.collectAsState()
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutienScope = rememberCoroutineScope()
 
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(tipId) {
-        PostDeatilsViewModel.getPostDetails(tipId)
-        PostDeatilsViewModel.getComments(tipId)
-        PostDeatilsViewModel.checkIfSaved(tipId)
-        PostDeatilsViewModel.fetchSavedCount(tipId)
-        PostDeatilsViewModel.fetchCommentCount(tipId)
+        PostDetailsViewModel.getPostDetails(tipId)
+        PostDetailsViewModel.getComments(tipId)
+        PostDetailsViewModel.checkIfSaved(tipId)
+        PostDetailsViewModel.fetchSavedCount(tipId)
+        PostDetailsViewModel.fetchCommentCount(tipId)
     }
 
     if (postDetails != null) {
@@ -106,40 +110,46 @@ fun PostDetailsScreen(
         val pagerState = rememberPagerState { images.size }
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 8.dp, end = 8.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            Row(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        focusManager.clearFocus()
+                    }
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .zIndex(2f),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 18.dp),
                 ) {
+//              BackIcon
                     IconButton(
                         onClick = { navController.popBackStack() },
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = "Back To HomeScreen",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }
+
+//              AuthorInfo
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 52.dp)
-                        .zIndex(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(top = 0.dp, bottom = 4.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        //                    AuthorInfo
                         Image(
                             painter = rememberImagePainter(postDetails.user.image),
                             contentScale = ContentScale.Crop,
@@ -155,34 +165,38 @@ fun PostDetailsScreen(
                         )
                     }
 
-                    //                ShareButton
-                    IconButton(onClick = {
+                    Spacer(modifier = Modifier.weight(1f))
+
+//                ShareButton
+                    IconButton(
+                        onClick = {
                         shareContent(tipId, context)
                         CoroutineScope(Dispatchers.Main).launch {
                             snackbarHostState.showSnackbar("Post link copied!")
-                        }
-                    }) {
+                            }
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.share),
                             contentDescription = "Share Post",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
 
-            Column {
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 86.dp,bottom = 68.dp)
-                ) {
-                    //          PostImage
+              ) {
+//          PostImage
                     item {
                         HorizontalPager(
                             state = pagerState,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(320.dp)
+                                .padding(top = 16.dp)
                         ) { page ->
                             Image(
                                 painter = rememberImagePainter(images[page]),
@@ -193,12 +207,12 @@ fun PostDetailsScreen(
                         }
                     }
 
-                    //          PostDetails
+//          PostDetails
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = postDetails.post.title,
+                            text = postDetails.post?.title ?: "",
                             fontWeight = FontWeight.Bold
                         )
 
@@ -213,13 +227,13 @@ fun PostDetailsScreen(
                             style = MaterialTheme.typography.bodySmall
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        //Add comment
+              //Add comment
                         PostCommentInput(
                             tipId = tipId,
                             modifier = Modifier
                                 .bringIntoViewRequester(bringIntoViewRequester),
                             onCommentAdded = {
-                                PostDeatilsViewModel.getComments(tipId)
+                                PostDetailsViewModel.getComments(tipId)
                             }
                         )
                     }
@@ -228,13 +242,11 @@ fun PostDetailsScreen(
                     }
                 }
             }
-
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
             ) {
                 //FavoriteButton
                 Column(
@@ -249,7 +261,7 @@ fun PostDetailsScreen(
                                 if (isFavorited) postDetails.post.savedCount - 1
                                 else postDetails.post.savedCount + 1
 
-                            PostDeatilsViewModel.updateFavoriteCount(
+                            PostDetailsViewModel.updateFavoriteCount(
                                 postDetails.post.id,
                                 newSavedCount
                             )
@@ -263,12 +275,12 @@ fun PostDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     SaveIcon(
-                        isSaved = PostDeatilsViewModel.isSaved.value,
+                        isSaved = PostDetailsViewModel.isSaved.value,
                         onToggleSaved = {
-                            PostDeatilsViewModel.toggleSaveTip(tipId)
+                            PostDetailsViewModel.toggleSaveTip(tipId)
                         }
                     )
-                    Text(text = "${PostDeatilsViewModel.savedCount.value ?: 0}")
+                    Text(text = "${PostDetailsViewModel.savedCount.value ?: 0}")
                 }
 
                 //CommentIcon
@@ -282,7 +294,7 @@ fun PostDetailsScreen(
                             }
                         }
                     )
-                    Text(text = "${PostDeatilsViewModel.commentCount.value ?: 0}")
+                    Text(text = "${PostDetailsViewModel.commentCount.value ?: 0}")
                 }
             }
         }

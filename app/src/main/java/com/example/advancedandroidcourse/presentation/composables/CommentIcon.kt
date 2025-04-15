@@ -36,7 +36,7 @@ fun CommentIcon(
                 painter = painterResource(id = R.drawable.comment),
                 contentDescription = "Comment",
                 modifier = Modifier.size(32.dp),
-                tint = LogoColor
+                tint = MainTextColor
             )
         }
     }
