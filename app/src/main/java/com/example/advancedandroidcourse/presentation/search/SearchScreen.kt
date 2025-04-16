@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.advancedandroidcourse.data.model.PostDetails
@@ -49,6 +50,10 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
     val isLoading by viewModel.isLoading.collectAsState() //Add loading state
     val errorMessage by viewModel.errorMessage.collectAsState() // Add error message state
     val searchPerformed by viewModel.searchPerformed.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshTips()
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         //Back arrow and Search bar

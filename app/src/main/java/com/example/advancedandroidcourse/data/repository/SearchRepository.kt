@@ -1,6 +1,7 @@
 package com.example.advancedandroidcourse.data.repository
 
 import com.example.advancedandroidcourse.data.model.Tip
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
@@ -11,6 +12,17 @@ import javax.inject.Singleton
 class SearchRepository @Inject constructor() {
     private val db = FirebaseFirestore.getInstance()
 
+    private fun getTipFromDoc(doc: DocumentSnapshot): Tip {
+        val id = doc.id
+        val title = doc.getString("title") ?: ""
+        val content = doc.getString("content") ?: ""
+        val images = doc.get("images") as? List<String> ?: emptyList()
+        val userId = doc.getString("userId") ?: ""
+        val tags = doc.get("tags") as? List<String> ?: emptyList()
+        val timestamp = doc.getTimestamp("timestamp")
+        return Tip(id, title, content, images, userId, tags, timestamp)
+    }
+
     suspend fun getLatestTips(): List<Tip> {
         return try {
             db.collection("tips")
@@ -19,11 +31,7 @@ class SearchRepository @Inject constructor() {
                 .get()
                 .await()
                 .documents
-                .map {
-                    val id = it.id
-                    val title = it.getString("title") ?: ""
-                    Tip(id, title)
-                }
+                .map { getTipFromDoc(it) }
         } catch (e: Exception) {
             emptyList()
         }
@@ -38,10 +46,8 @@ class SearchRepository @Inject constructor() {
                 .await()
                 .documents
                 .mapNotNull { doc ->
-                    val id = doc.id
-                    val title = doc.getString("title") ?: ""
                     val savedCount = doc.getLong("savedCount") ?: 0
-                    if (savedCount > 0) Tip(id, title) else null
+                    if (savedCount > 0) getTipFromDoc(doc) else null
                 }
         } catch (e: Exception) {
             emptyList()
@@ -54,19 +60,9 @@ class SearchRepository @Inject constructor() {
                 .get()
                 .await()
                 .documents
-                .map {
-                    Tip(
-                        id = it.id,
-                        title = it.getString("title") ?: "",
-                        content = it.getString("content") ?: "",
-                        images = it.get("images") as? List<String> ?: emptyList(),
-                        userId = it.getString("userId") ?: "",
-                        tags = it.get("tags") as? List<String> ?: emptyList(),
-                        timestamp = it.getTimestamp("timestamp")
-                    )
-                }
+                .map { getTipFromDoc(it) }
 
-            //Filter results client-side using Lowecase comparison
+            //Filter results client-side using Lowercase comparison
             result.filter { it.title.contains(query, ignoreCase = true) }
 
         } catch (e: Exception) {

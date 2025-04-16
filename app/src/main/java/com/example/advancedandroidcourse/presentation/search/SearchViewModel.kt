@@ -38,6 +38,11 @@ class SearchViewModel @Inject constructor(
         fetchTips()
     }
 
+    //Expose Refresh tips for external use
+    fun refreshTips() {
+        fetchTips()
+    }
+
     private fun fetchTips() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -46,7 +51,7 @@ class SearchViewModel @Inject constructor(
                 _hotTips.value = repository.getHotTips()
                 _latestTips.value = repository.getLatestTips()
             } catch (e: Exception) {
-                _errorMessage.value + "Failed to load tips"
+                _errorMessage.value = "Failed to load tips"
             } finally {
                 _isLoading.value = false
             }
