@@ -148,7 +148,7 @@ class PostRepository @Inject constructor(
     }
 
 //    Get post randomly
-suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
+suspend fun getRandomPosts(lastDocId: String? = null, limit: Long = 10): List<PostDetails> {
     return try {
         val postsQuery = firestore.collection("tips")
             .get()
@@ -172,7 +172,7 @@ suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
         }
         randomPosts
     } catch (e: Exception) {
-        emptyList()
+        emptyList<PostDetails>()
     }
 }
 

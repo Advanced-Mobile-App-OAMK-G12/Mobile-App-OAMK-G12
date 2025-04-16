@@ -94,11 +94,13 @@ fun loadHotPosts() {
 //    Lost RandomPosts
     fun loadRandomPosts() {
         viewModelScope.launch {
-            val random = postRepository.getRandomPosts()
-            _posts.value = random
-            randomPosts = random
+            val currentPosts = _posts.value ?: emptyList()
+            val lastPostId = currentPosts.lastOrNull()?.post?.id
+            val newPosts = postRepository.getRandomPosts(lastDocId = lastPostId)
+            _posts.value = currentPosts + newPosts
+            randomPosts = _posts.value ?: emptyList()
+            Log.d("PostViewModel", "Loading random posts, total count = ${_posts.value?.size}")
         }
-    Log.d("PostViewModel", "Loading random posts")
     }
 
 //    Update savedCount

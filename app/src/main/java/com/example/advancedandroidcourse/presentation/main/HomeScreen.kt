@@ -82,11 +82,6 @@ fun HomeScreen(
         "DISCOVER" -> postViewModel.randomPosts
         else -> emptyList<PostDetails>()
     }
-    Log.d("HomeScreen", "postsToDisplay.size = ${postsToDisplay.size}")
-
-    if (postsToDisplay.isEmpty()) {
-        Log.d("HomeScreen", "Posts still loading or empty")
-    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
