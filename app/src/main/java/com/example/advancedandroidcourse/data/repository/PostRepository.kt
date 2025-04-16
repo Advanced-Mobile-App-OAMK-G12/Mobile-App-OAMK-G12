@@ -9,6 +9,7 @@ import com.example.advancedandroidcourse.data.model.User
 import com.google.api.QuotaLimit
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
@@ -72,23 +73,22 @@ class PostRepository @Inject constructor(
     }
 
 //        Fetching LatestPosts
-    suspend fun getLatestPosts(lastTimestamp: Timestamp?): List<PostDetails> {
-        Log.d("PostRepository", "PostRepository Last timestamp: $lastTimestamp")
+    suspend fun getLatestPosts(lastTimestamp: Timestamp?): Pair<List<PostDetails>, Timestamp?> {
 
         return try {
             var query = firestore.collection("tips")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(10)
 
-            if (lastTimestamp != null) {
-                query = query.startAfter(lastTimestamp)
+            lastTimestamp?.let {
+                query = query.startAfter(it)
             }
 
             val querySnapshot = query.get().await()
 
             Log.d("PostRepository", "PostRepository Documents size: ${querySnapshot.documents.size}")
 
-            querySnapshot.documents.mapNotNull { document ->
+            val posts = querySnapshot.documents.mapNotNull { document ->
                 val post = document.toObject(Post::class.java)?.copy(id = document.id)
                     ?: return@mapNotNull null
                 Log.d("PostRepository", "PostRepository Post timestamp: ${post.timestamp}")
@@ -100,22 +100,35 @@ class PostRepository @Inject constructor(
                     user = user ?: User(name = "Unknown", image = ""),
                 )
             }
+
+            val nextPageKey = posts.lastOrNull()?.post?.timestamp
+            posts to nextPageKey
         } catch (e: Exception) {
             Log.e("PostRepository", "PostRepository Error fetching posts: ${e.message}")
-            emptyList()
+            emptyList<PostDetails>() to null
         }
     }
 
 //    Get posts by savedCount
-    suspend fun getHotPosts(): List<PostDetails> {
+    suspend fun getHotPosts(
+        lastSavedCount: Long?,
+        lastDocId: String?
+    ): Pair<List<PostDetails>, Pair<Long?, String?>> {
         return try {
             var query = firestore.collection("tips")
                 .orderBy("savedCount", Query.Direction.DESCENDING)
+                .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
                 .limit(10)
 
-            val posts = query.get().await()
+            if (lastSavedCount != null && lastDocId != null) {
+                query = query.startAfter(lastSavedCount, lastDocId)
+            }
 
-            posts.documents.mapNotNull { document ->
+            val querySnapshot = query.get().await()
+
+            Log.d("PostRepository", "Hot Documents size: ${querySnapshot.documents.size}")
+
+            val posts = querySnapshot.documents.mapNotNull { document ->
                 val post = document.toObject(Post::class.java)?.copy(id = document.id)
                     ?: return@mapNotNull null
 
@@ -124,11 +137,13 @@ class PostRepository @Inject constructor(
 
                 PostDetails(
                     post = post,
-                    user = user ?: User(name = "Unknown", image = ""),
+                    user = user ?: User(name = "Unknown", image = "")
                 )
             }
+            val lastPost = posts.lastOrNull()?.post
+            posts to (lastPost?.savedCount?.toLong() to lastPost?.id)
         } catch (e: Exception) {
-            emptyList()
+            emptyList<PostDetails>() to (null to null)
         }
     }
 
@@ -200,16 +215,4 @@ suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
             null
         }
     }
-
-//    suspend fun getFavoriteCount(postId: String): Int {
-//        try {
-//            val postRef = firestore.collection("tips").document(postId)
-//            val documentSnapshot = postRef.get().await()
-//
-//            return documentSnapshot.getLong("favoriteCount")?.toInt() ?: 0
-//        } catch (e: Exception) {
-//            Log.e("PostRepository", "Error fetching favoriteCount from Firestore: ${e.message}")
-//            return 0
-//        }
-//    }
 }
