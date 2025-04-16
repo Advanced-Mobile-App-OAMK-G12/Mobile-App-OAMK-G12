@@ -4,8 +4,10 @@ package com.example.advancedandroidcourse.presentation.main
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.advancedandroidcourse.data.model.PostDetails
@@ -25,10 +27,22 @@ class PostViewModel @Inject constructor(
     private val savedTipsRepository: SaveTipsRepository
 ) : ViewModel() {
 
-
 //    Save posts fetching from firestore
     private val _posts = MutableStateFlow<List<PostDetails>>(emptyList())
     val posts: StateFlow<List<PostDetails>> = _posts.asStateFlow()
+
+    private var lastTimestamp: Timestamp? = null
+    private var lastSavedCount: Long? = null
+    private var lastDocId: String? = null
+//    private var currentTab = "DISCOVER"
+    var latestPosts by mutableStateOf<List<PostDetails>>(emptyList())
+        private set
+
+    var hotPosts by mutableStateOf<List<PostDetails>>(emptyList())
+        private set
+
+    var randomPosts by mutableStateOf<List<PostDetails>>(emptyList())
+        private set
 
 //    Fetch SavedCount
     private val _savedCount = mutableStateOf(0)
@@ -58,28 +72,34 @@ class PostViewModel @Inject constructor(
 //Get LatestPosts
     fun loadLatestPosts() {
         viewModelScope.launch {
-            val posts = postRepository.getLatestPosts(null)
-            _posts.value = posts
+            val (newPosts, newLastTimestamp) = postRepository.getLatestPosts(lastTimestamp)
+            lastTimestamp = newLastTimestamp
+            latestPosts = latestPosts + newPosts
+            Log.d("PostViewModel", "Loaded latestPosts = ${latestPosts.size}")
         }
     }
 
 //    Load tips by savedCount
-    fun loadHotPosts() {
-        viewModelScope.launch {
-            val hotPosts = postRepository.getHotPosts()
-            _posts.value = hotPosts
-        }
-    }
-
-//    Lost RandomPosts
-fun loadRandomPosts() {
+fun loadHotPosts() {
     viewModelScope.launch {
-        val randomPosts = postRepository.getRandomPosts()
-        _posts.value = randomPosts
+        val (newPosts, pageKey) = postRepository.getHotPosts(lastSavedCount, lastDocId)
+        hotPosts = hotPosts + newPosts
+
+        lastSavedCount = pageKey.first
+        lastDocId = pageKey.second
+        Log.d("PostViewModel", "Loaded hot posts = ${_posts.value?.size}")
     }
 }
 
-
+//    Lost RandomPosts
+    fun loadRandomPosts() {
+        viewModelScope.launch {
+            val random = postRepository.getRandomPosts()
+            _posts.value = random
+            randomPosts = random
+        }
+    Log.d("PostViewModel", "Loading random posts")
+    }
 
 //    Update savedCount
     fun updateSavedCount(tipId: String, newSavedCount: Int) {
@@ -110,10 +130,4 @@ fun loadRandomPosts() {
         }
     }
 
-//    Fetch savedTipCount
-//    fun fetchSavedCount(tipId: String) {
-//        viewModelScope.launch {
-//            _savedTipCount.value = savedTipsRepository.getSavedCount(tipId)
-//        }
-//    }
 }
