@@ -1,11 +1,11 @@
 package com.example.advancedandroidcourse.presentation.main
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,7 +50,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.advancedandroidcourse.R
-import com.example.advancedandroidcourse.presentation.composables.AddPostMapView
+import com.example.advancedandroidcourse.data.model.Location
+import com.example.advancedandroidcourse.presentation.location.AddPostMapView
+import com.example.advancedandroidcourse.presentation.location.LocationViewModel
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -60,9 +61,11 @@ import com.google.android.gms.maps.model.LatLng
 fun PostScreen(
     navController: NavController,
     onBackClick: () -> Unit //Back navigation function
-
 ) {
     val postViewModel: PostViewModel = hiltViewModel() //inject ViewModel
+//    Inject LocationViewModel
+    val locationViewModel: LocationViewModel = hiltViewModel()
+
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -77,7 +80,6 @@ fun PostScreen(
     }
 
 //    For map
-    val locationId = "locationExample"
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
     //Tag selection state
@@ -244,29 +246,49 @@ fun PostScreen(
             //Post Button
             Button(
                 onClick = {
-                    if (title.isBlank() || content.isBlank() || imageUris.isEmpty()) {
+                    Log.d("PostDebug", "Post button clicked")
+                    if (title.isBlank() || content.isBlank() || imageUris.isEmpty() || selectedLocation == null) {
                         showError = true
                         return@Button
                     }
                     isPosting = true
                     showError = false
 
-                    postViewModel.createPost(
-                        title = title,
-                        content = content,
-                        imageUris = imageUris,
-                        tags = selectedTags.toList(),
-                        locationId = locationId
-                    ) { success ->
-                        isPosting = false
-                        if (success) {
-                            navController.navigate("home") {
-                                popUpTo("home") { inclusive = true }
-                                launchSingleTop = true
+//                    Fetch latitude and longitude
+                    val latitude = selectedLocation!!.latitude
+                    val longitude = selectedLocation!!.longitude
+                    Log.d("PostDebug", "Location selected: $latitude, $longitude")
+
+                    val location = Location(
+                        name = "Some place",
+                        city = "some city",
+                        address = "some address",
+                        latitude = latitude,
+                        longitude = longitude
+                    )
+
+                    locationViewModel.addLocation(location) { newLocationId ->
+                        Log.d("PostDebug", "Location created with ID: $newLocationId")
+                        if (newLocationId.isNotBlank()) {
+                            postViewModel.createPost(
+                                title = title,
+                                content = content,
+                                imageUris = imageUris,
+                                tags = selectedTags.toList(),
+                                locationId = newLocationId,
+                            ) { success ->
+                                isPosting = false
+                                if (success) {
+                                    navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                } else {
+                                    isPosting = false
+                                }
                             }
                         }
                     }
-
                 },
                 enabled = !isPosting, //Disable when posting
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
