@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -23,12 +25,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +45,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
 import com.example.advancedandroidcourse.data.model.PostDetails
-import com.google.firebase.database.collection.LLRBNode
+import kotlinx.coroutines.launch
 
 @Composable
 fun SaveTipsScreen(
@@ -61,104 +66,125 @@ fun SaveTipsScreen(
     //State to track which tip to confirm Delete
     var tipToDelete by remember { mutableStateOf<PostDetails?>(null) }
 
+    //Create the snackbar state and scope
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     val notificationViewModel: NotificationViewModel = hiltViewModel()
     val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
 
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            BottomBar(navController = navController, hasUnreadNotifications)
+        }
+    ) { innerPadding ->
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-            )
-    ) {
-        //Adding Logo
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Easy Finn Logo",
+
+        Column(
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp)
-                .size(52.dp)
-        )
-
-        //Heading
-        Text(
-            text = "Saved Tips",
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-
-        )
-
-        //Use LazyVerticalGrid for a grid layout with 2 columns
-        LazyVerticalGrid  (
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxSize()
+                .padding(
+                    top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                )
+                .padding(innerPadding)
         ) {
-            items(filteredTips) { postDetails ->
-                Box{
-                    PostItem(
-                        postDetails = postDetails,
-                        showAuthorInfo = true,
-                        onToggleFavorited = {},
-                        navController = navController,
-                    )
+            //Adding Logo
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Easy Finn Logo",
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp)
+                    .size(52.dp)
+            )
 
-                    //Remove button on Top Right
-                    IconButton(
-                        onClick = {
-                            //viewModel.removeSavedTip(postDetails.post.id)
-                            tipToDelete = postDetails
-                        },
-                            modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(6.dp)
-                            .background(Color.White.copy(alpha = 0.7f), shape = CircleShape)
-                            .size(28.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Remove Saved Tip",
-                            tint = Color.Black,
-                            modifier = Modifier.size(20.dp)
+            //Heading
+            Text(
+                text = "Saved Tips",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+
+            )
+
+            //Use LazyVerticalGrid for a grid layout with 2 columns
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(filteredTips) { postDetails ->
+                    Box {
+                        PostItem(
+                            postDetails = postDetails,
+                            showAuthorInfo = true,
+                            onToggleFavorited = {},
+                            navController = navController,
                         )
-                    }
-                }
 
+                        //Remove button on Top Right
+                        IconButton(
+                            onClick = {
+                                tipToDelete = postDetails
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(6.dp)
+                                .background(Color.White.copy(alpha = 0.7f), shape = CircleShape)
+                                .size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Remove Saved Tip",
+                                tint = Color.Black,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+
+                }
             }
         }
-        BottomBar(navController = navController, hasUnreadNotifications)
-    }
 
-    //Confirmation Dialog
-    tipToDelete?.let { post ->
-        AlertDialog(
-            onDismissRequest = { tipToDelete = null },
-            title = { Text("Unsave?") },
-            text = { Text("Unsaving a tip will remove it from your saved tips collection.") },
-            confirmButton = {
-                Button(onClick = {
-                    viewModel.removeSavedTip(post.post.id)
-                    tipToDelete = null
-                }) {
-                    Text("REMOVE")
+        //Confirmation Dialog
+        tipToDelete?.let { post ->
+            AlertDialog(
+                onDismissRequest = { tipToDelete = null },
+                title = { Text("Unsave?") },
+                text = { Text("Unsaving a tip will remove it from your saved tips collection.") },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.removeSavedTip(post)
+                        tipToDelete = null
+
+                        coroutineScope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Tip Unsaved",
+                                actionLabel = "Undo"
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.undoRemoveTip()
+                            }
+                        }
+                    }) {
+                        Text("REMOVE")
+                    }
+
+
+                },
+                dismissButton = {
+                    Button(onClick = { tipToDelete = null }) {
+                        Text("CANCEL")
+                    }
                 }
-
-
-            },
-            dismissButton = {
-                Button(onClick = { tipToDelete = null }) {
-                    Text("CANCEL")
-                }
-            }
-        )
+            )
+        }
     }
 }

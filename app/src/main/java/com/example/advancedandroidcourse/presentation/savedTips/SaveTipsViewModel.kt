@@ -20,6 +20,9 @@ class SaveTipsViewModel @Inject constructor(
     var savedPosts by mutableStateOf<List<PostDetails>>(emptyList())
         private set
 
+    //store the last removed tip for undo
+    private var lastRemovedTip: PostDetails? = null
+
     init {
         fetchTips()
     }
@@ -33,10 +36,22 @@ class SaveTipsViewModel @Inject constructor(
     }
 
     //Remove Saved tip
-    fun removeSavedTip(tipId: String) {
+    fun removeSavedTip(postDetails: PostDetails) {
         viewModelScope.launch {
-            repository.removeSavedTip((tipId))
+            lastRemovedTip = postDetails
+            repository.removeSavedTip(postDetails.post.id)
             fetchTips()
+        }
+    }
+
+    //Resave the last deleted tip
+    fun undoRemoveTip() {
+        lastRemovedTip?.let { tip ->
+            viewModelScope.launch {
+                repository.reSaveTip(tip)
+                fetchTips()
+                lastRemovedTip = null
+            }
         }
     }
 }
