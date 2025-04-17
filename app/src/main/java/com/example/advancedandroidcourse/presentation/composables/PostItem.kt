@@ -67,7 +67,6 @@ fun PostItem(
                 .fillMaxWidth()
                 .pointerInput(Unit) {
                     detectTapGestures(
-//                        onPress = {},
                         onTap = {
                             Log.d(
                                 "HomeScreen",

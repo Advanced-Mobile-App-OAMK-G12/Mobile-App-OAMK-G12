@@ -46,7 +46,14 @@ class PostRepository @Inject constructor(
         }
     }
     //Method to add post to Firestore
-    fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
+    fun addPost(
+        title: String,
+        content: String,
+        imageUrls: List<String>?,
+        tags: List<String>,
+        locationId: String,
+        onComplete: (Boolean) -> Unit
+    ) {
         val userId = auth.currentUser?.uid ?: return
 
     //Get current timestamp as a Timestamp object
@@ -59,7 +66,8 @@ class PostRepository @Inject constructor(
             "userId" to userId,
             "savedCount" to 0,
             "tags" to tags,
-            "timestamp" to timestamp
+            "timestamp" to timestamp,
+            "locationId" to locationId
         )
 
         firestore.collection("tips")
@@ -148,7 +156,7 @@ class PostRepository @Inject constructor(
     }
 
 //    Get post randomly
-suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
+suspend fun getRandomPosts(lastDocId: String? = null, limit: Long = 10): List<PostDetails> {
     return try {
         val postsQuery = firestore.collection("tips")
             .get()
@@ -172,7 +180,7 @@ suspend fun getRandomPosts(limit: Long = 10): List<PostDetails> {
         }
         randomPosts
     } catch (e: Exception) {
-        emptyList()
+        emptyList<PostDetails>()
     }
 }
 

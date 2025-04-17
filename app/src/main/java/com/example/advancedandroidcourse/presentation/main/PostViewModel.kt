@@ -48,7 +48,14 @@ class PostViewModel @Inject constructor(
     private val _savedCount = mutableStateOf(0)
     val savedCount: State<Int> = _savedCount
 
-    fun createPost(title: String, content: String, imageUris: List<Uri>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
+    fun createPost(
+        title: String,
+        content: String,
+        imageUris: List<Uri>?,
+        tags: List<String>,
+        locationId: String,
+        onComplete: (Boolean) -> Unit
+    ) {
 
 
         viewModelScope.launch {
@@ -61,7 +68,7 @@ class PostViewModel @Inject constructor(
                 }
 
                 //if no image is selected,create post without image
-                postRepository.addPost(title, content, imageUrls, tags, onComplete)
+                postRepository.addPost(title, content, imageUrls, tags, locationId, onComplete)
             } else {
                 onComplete(false)
             }
@@ -94,11 +101,13 @@ fun loadHotPosts() {
 //    Lost RandomPosts
     fun loadRandomPosts() {
         viewModelScope.launch {
-            val random = postRepository.getRandomPosts()
-            _posts.value = random
-            randomPosts = random
+            val currentPosts = _posts.value ?: emptyList()
+            val lastPostId = currentPosts.lastOrNull()?.post?.id
+            val newPosts = postRepository.getRandomPosts(lastDocId = lastPostId)
+            _posts.value = currentPosts + newPosts
+            randomPosts = _posts.value ?: emptyList()
+            Log.d("PostViewModel", "Loading random posts, total count = ${_posts.value?.size}")
         }
-    Log.d("PostViewModel", "Loading random posts")
     }
 
 //    Update savedCount

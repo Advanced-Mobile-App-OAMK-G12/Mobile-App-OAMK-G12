@@ -51,7 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.advancedandroidcourse.R
-
+import com.example.advancedandroidcourse.presentation.composables.AddPostMapView
+import com.google.android.gms.maps.model.LatLng
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +75,10 @@ fun PostScreen(
     ) { uris: List<Uri>? ->
         imageUris = uris ?: emptyList()
     }
+
+//    For map
+    val locationId = "locationExample"
+    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
     //Tag selection state
     val tagOptions = listOf(
@@ -227,6 +232,14 @@ fun PostScreen(
             }
         }
 
+//        Google Map
+        item {
+            Text("Select Location", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            AddPostMapView { latLng ->
+                selectedLocation = latLng
+            }
+        }
+
         item {
             //Post Button
             Button(
@@ -242,7 +255,8 @@ fun PostScreen(
                         title = title,
                         content = content,
                         imageUris = imageUris,
-                        tags = selectedTags.toList()
+                        tags = selectedTags.toList(),
+                        locationId = locationId
                     ) { success ->
                         isPosting = false
                         if (success) {

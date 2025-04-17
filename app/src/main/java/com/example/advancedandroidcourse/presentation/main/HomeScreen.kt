@@ -1,17 +1,13 @@
 package com.example.advancedandroidcourse.presentation.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import android.util.Log
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,9 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -81,11 +75,6 @@ fun HomeScreen(
         "HOT" -> postViewModel.hotPosts
         "DISCOVER" -> postViewModel.randomPosts
         else -> emptyList<PostDetails>()
-    }
-    Log.d("HomeScreen", "postsToDisplay.size = ${postsToDisplay.size}")
-
-    if (postsToDisplay.isEmpty()) {
-        Log.d("HomeScreen", "Posts still loading or empty")
     }
 
     Scaffold(
