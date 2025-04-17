@@ -31,4 +31,12 @@ class SaveTipsViewModel @Inject constructor(
 
         }
     }
+
+    //Remove Saved tip
+    fun removeSavedTip(tipId: String) {
+        viewModelScope.launch {
+            repository.removeSavedTip((tipId))
+            fetchTips()
+        }
+    }
 }
