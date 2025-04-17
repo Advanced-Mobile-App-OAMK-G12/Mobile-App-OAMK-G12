@@ -89,7 +89,7 @@ fun SaveTipsScreen(
                     postDetails = postDetails,
                     showAuthorInfo = true,
                     onToggleFavorited = {},
-                    navController = navController
+                    navController = navController,
                 )
             }
 

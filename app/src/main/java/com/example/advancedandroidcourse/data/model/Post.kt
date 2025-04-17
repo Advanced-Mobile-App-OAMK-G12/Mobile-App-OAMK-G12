@@ -10,5 +10,6 @@ data class Post(
     var savedCount: Int = 0,
     val tags: List<String> = emptyList(),
     val timestamp: Timestamp? = null,
-    val userId: String = ""
+    val userId: String = "",
+    val locationId: String = ""
 )

@@ -82,6 +82,8 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     kapt(libs.hilt.compiler)
+//    dependency for google map
+    implementation ("com.google.android.gms:play-services-maps:18.0.2")
 
 }
 kapt {

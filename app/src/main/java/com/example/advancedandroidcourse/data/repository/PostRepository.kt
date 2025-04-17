@@ -46,7 +46,14 @@ class PostRepository @Inject constructor(
         }
     }
     //Method to add post to Firestore
-    fun addPost(title: String, content: String, imageUrls: List<String>?, tags: List<String>, onComplete: (Boolean) -> Unit) {
+    fun addPost(
+        title: String,
+        content: String,
+        imageUrls: List<String>?,
+        tags: List<String>,
+        locationId: String,
+        onComplete: (Boolean) -> Unit
+    ) {
         val userId = auth.currentUser?.uid ?: return
 
     //Get current timestamp as a Timestamp object
@@ -59,7 +66,8 @@ class PostRepository @Inject constructor(
             "userId" to userId,
             "savedCount" to 0,
             "tags" to tags,
-            "timestamp" to timestamp
+            "timestamp" to timestamp,
+            "locationId" to locationId
         )
 
         firestore.collection("tips")
