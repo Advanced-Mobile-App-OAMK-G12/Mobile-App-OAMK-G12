@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,10 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.presentation.composables.BottomBar
 import com.example.advancedandroidcourse.presentation.composables.PostItem
 import com.example.advancedandroidcourse.presentation.notifications.NotificationViewModel
+import com.example.advancedandroidcourse.data.model.PostDetails
 import com.google.firebase.database.collection.LLRBNode
 
 @Composable
@@ -52,6 +57,10 @@ fun SaveTipsScreen(
     val filteredTips = viewModel.savedPosts.filter {
         it.post.title.contains(searchQuery, ignoreCase = true)
     }
+
+    //State to track which tip to confirm Delete
+    var tipToDelete by remember { mutableStateOf<PostDetails?>(null) }
+
     val notificationViewModel: NotificationViewModel = hiltViewModel()
     val hasUnreadNotifications by notificationViewModel.hasUnreadNotifications.collectAsState()
 
@@ -106,7 +115,8 @@ fun SaveTipsScreen(
                     //Remove button on Top Right
                     IconButton(
                         onClick = {
-                            viewModel.removeSavedTip(postDetails.post.id)
+                            //viewModel.removeSavedTip(postDetails.post.id)
+                            tipToDelete = postDetails
                         },
                             modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -126,5 +136,29 @@ fun SaveTipsScreen(
             }
         }
         BottomBar(navController = navController, hasUnreadNotifications)
+    }
+
+    //Confirmation Dialog
+    tipToDelete?.let { post ->
+        AlertDialog(
+            onDismissRequest = { tipToDelete = null },
+            title = { Text("Unsave?") },
+            text = { Text("Unsaving a tip will remove it from your saved tips collection.") },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.removeSavedTip(post.post.id)
+                    tipToDelete = null
+                }) {
+                    Text("REMOVE")
+                }
+
+
+            },
+            dismissButton = {
+                Button(onClick = { tipToDelete = null }) {
+                    Text("CANCEL")
+                }
+            }
+        )
     }
 }
