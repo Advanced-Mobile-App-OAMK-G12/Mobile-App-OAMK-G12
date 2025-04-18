@@ -256,7 +256,7 @@ fun PostScreen(
             Button(
                 onClick = {
                     Log.d("PostDebug", "Post button clicked")
-                    if (title.isBlank() || content.isBlank() || imageUris.isEmpty() || selectedLocation == null) {
+                    if (title.isBlank() || content.isBlank() || imageUris.isEmpty()) {
                         showError = true
                         return@Button
                     }
@@ -264,38 +264,57 @@ fun PostScreen(
                     showError = false
 
 //                    Fetch latitude and longitude
-                    val latitude = selectedLocation!!.latitude
-                    val longitude = selectedLocation!!.longitude
-                    val cityName = selectedCity
-                    val address = selectedAddress
+                    if (selectedLocation != null) {
+                        //val latitude = selectedLocation!!.latitude
+                        //val longitude = selectedLocation!!.longitude
+                        //val cityName = selectedCity
+                        //val address = selectedAddress
 
-                    Log.d("PostDebug", "Location selected: $latitude, $longitude")
+                       //Log.d("PostDebug", "Location selected: $latitude, $longitude")
 
-                    val location = Location(
-                        city = cityName,
-                        address = address,
-                        latitude = latitude,
-                        longitude = longitude
-                    )
+                        val location = Location(
+                            city = selectedCity,
+                            address = selectedAddress,
+                            latitude = selectedLocation!!.latitude,
+                            longitude = selectedLocation!!.longitude
+                        )
 
-                    locationViewModel.addLocation(location) { newLocationId ->
-                        Log.d("PostDebug", "Location created with ID: $newLocationId")
-                        if (newLocationId.isNotBlank()) {
-                            postViewModel.createPost(
-                                title = title,
-                                content = content,
-                                imageUris = imageUris,
-                                tags = selectedTags.toList(),
-                                locationId = newLocationId,
-                            ) { success ->
-                                isPosting = false
-                                if (success) {
-                                    navController.navigate("home") {
-                                        popUpTo("home") { inclusive = true }
-                                        launchSingleTop = true
-                                    }
-                                } else {
+                        locationViewModel.addLocation(location) { newLocationId ->
+                            Log.d("PostDebug", "Location created with ID: $newLocationId")
+                            if (newLocationId.isNotEmpty()) {
+                                postViewModel.createPost(
+                                    title = title,
+                                    content = content,
+                                    imageUris = imageUris,
+                                    tags = selectedTags.toList(),
+                                    locationId = newLocationId,
+                                ) { success ->
                                     isPosting = false
+                                    if (success) {
+                                        navController.navigate("home") {
+                                            popUpTo("home") { inclusive = true }
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                }
+                            } else {
+                                isPosting = false
+                            }
+                        }
+                    } else {
+                        //No location Selected
+                        postViewModel.createPost(
+                            title = title,
+                            content = content,
+                            imageUris = imageUris,
+                            tags = selectedTags.toList(),
+                            locationId = "",
+                        ) { success ->
+                            isPosting = false
+                            if (success) {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
                                 }
                             }
                         }

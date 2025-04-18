@@ -67,8 +67,12 @@ class PostRepository @Inject constructor(
             "savedCount" to 0,
             "tags" to tags,
             "timestamp" to timestamp,
-            "locationId" to locationId
-        )
+            //"locationId" to locationId
+        ).apply {
+            if (!locationId.isNullOrBlank()) {
+                this["locationId"] = locationId
+            }
+        }
 
         firestore.collection("tips")
             .add(post)
