@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,6 +54,7 @@ import com.example.advancedandroidcourse.R
 import com.example.advancedandroidcourse.data.model.Location
 import com.example.advancedandroidcourse.presentation.location.AddPostMapView
 import com.example.advancedandroidcourse.presentation.location.LocationViewModel
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -213,9 +215,11 @@ fun PostScreen(
 
             //Tag Selection using clickable buttons
             Text("Select # Tags", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Column(
+            FlowRow(
+                mainAxisSpacing = 8.dp,
+                crossAxisSpacing = 8.dp,
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                //verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 tagOptions.forEach { tag ->
                     FilterChip(
@@ -229,8 +233,9 @@ fun PostScreen(
                         },
                         label = { Text(tag) },
                         modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(min = 170.dp)
+                            .defaultMinSize(minWidth = 48.dp)
+                            //.padding(4.dp)
+                            //.widthIn(min = 170.dp)
                     )
                 }
             }
