@@ -10,7 +10,7 @@ import javax.inject.Inject
 class LocationRepository @Inject constructor(){
 
     val db = Firebase.firestore
-    val locationRef = db.collection("Location")
+    val locationRef = db.collection("location")
 
     suspend fun addLocation(location: Location) : String {
         return try {
