@@ -81,6 +81,8 @@ fun PostScreen(
 
 //    For map
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
+    var selectedCity by remember { mutableStateOf("") }
+    var selectedAddress by remember { mutableStateOf("") }
 
     //Tag selection state
     val tagOptions = listOf(
@@ -237,8 +239,10 @@ fun PostScreen(
 //        Google Map
         item {
             Text("Select Location", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            AddPostMapView { latLng ->
+            AddPostMapView { latLng, city, address ->
                 selectedLocation = latLng
+                selectedCity = city
+                selectedAddress = address
             }
         }
 
@@ -257,12 +261,14 @@ fun PostScreen(
 //                    Fetch latitude and longitude
                     val latitude = selectedLocation!!.latitude
                     val longitude = selectedLocation!!.longitude
+                    val cityName = selectedCity
+                    val address = selectedAddress
+
                     Log.d("PostDebug", "Location selected: $latitude, $longitude")
 
                     val location = Location(
-                        name = "Some place",
-                        city = "some city",
-                        address = "some address",
+                        city = cityName,
+                        address = address,
                         latitude = latitude,
                         longitude = longitude
                     )
