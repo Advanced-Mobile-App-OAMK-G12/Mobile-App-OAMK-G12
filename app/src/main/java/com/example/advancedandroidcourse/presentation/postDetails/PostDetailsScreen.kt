@@ -2,6 +2,7 @@ package com.example.advancedandroidcourse.presentation.postDetails
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -57,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.advancedandroidcourse.R
+import com.example.advancedandroidcourse.data.model.User
 import com.example.advancedandroidcourse.presentation.comment.CommentItem
 import com.example.advancedandroidcourse.presentation.comment.PostCommentInput
 import com.example.advancedandroidcourse.presentation.composables.CommentIcon
@@ -66,6 +68,8 @@ import com.example.advancedandroidcourse.presentation.composables.formatToDate
 import com.example.advancedandroidcourse.presentation.main.PostViewModel
 import com.example.advancedandroidcourse.ui.theme.LogoColor
 import com.example.advancedandroidcourse.ui.theme.MainTextColor
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,8 +94,31 @@ fun PostDetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     SnackbarHost(hostState = snackbarHostState)
 
+//    For commentInput fields
+    val avatarUrlState = remember { mutableStateOf("") }
+
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val currentUserId = currentUser?.uid ?: ""
+
+    LaunchedEffect(currentUserId){
+        val userRef = FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(currentUserId)
+
+        userRef.get().addOnSuccessListener { documentSnapShot ->
+            val user = documentSnapShot.toObject(User::class.java)
+            val avatarUrl = user?.image ?: ""
+            avatarUrlState.value = avatarUrl
+
+            Log.d("UserAvatar", "Fetching user avatar $avatarUrl")
+        }.addOnFailureListener { e ->
+            Log.e("UserAvatar", "Error fetching user data: ${e.message}")
+        }
+    }
+
     val comments by PostDetailsViewModel.comments.collectAsState()
 
+//    For mapping
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutienScope = rememberCoroutineScope()
 
@@ -99,6 +126,7 @@ fun PostDetailsScreen(
 
     LaunchedEffect(tipId) {
         PostDetailsViewModel.getPostDetails(tipId)
+        Log.d("PostDetails", "Location City: ${postDetails?.location?.city}")
         PostDetailsViewModel.getComments(tipId)
         PostDetailsViewModel.checkIfSaved(tipId)
         PostDetailsViewModel.fetchSavedCount(tipId)
@@ -217,25 +245,47 @@ fun PostDetailsScreen(
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
-
                         Text(text = postDetails.post.content)
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = postDetails.post.timestamp.formatToDate(),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = postDetails.location?.city ?: " ",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
 
-                        Text(
-                            text = postDetails.post.timestamp.formatToDate(),
-                            style = MaterialTheme.typography.bodySmall
-                        )
                         Spacer(modifier = Modifier.height(16.dp))
-              //Add comment
-                        PostCommentInput(
-                            tipId = tipId,
-                            modifier = Modifier
-                                .bringIntoViewRequester(bringIntoViewRequester),
-                            onCommentAdded = {
-                                PostDetailsViewModel.getComments(tipId)
-                            }
-                        )
+              //Add comment field
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(avatarUrlState.value),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "User Avatar",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                            )
+                            PostCommentInput(
+                                tipId = tipId,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .bringIntoViewRequester(bringIntoViewRequester),
+                                onCommentAdded = {
+                                    PostDetailsViewModel.getComments(tipId)
+                                }
+                            )
+                        }
                     }
                     items(comments) { commentDetails ->
                         CommentItem(commentDetails)

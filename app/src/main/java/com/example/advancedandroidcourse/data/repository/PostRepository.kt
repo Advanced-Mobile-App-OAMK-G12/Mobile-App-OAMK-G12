@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.advancedandroidcourse.data.model.Post
 import com.example.advancedandroidcourse.data.model.PostDetails
 import com.example.advancedandroidcourse.data.model.User
+import com.example.advancedandroidcourse.data.model.Location
 import com.google.api.QuotaLimit
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -204,6 +205,23 @@ suspend fun getRandomPosts(lastDocId: String? = null, limit: Long = 10): List<Po
             }
     }
 
+    suspend fun getLocationById(locationId: String): Location? {
+        Log.d("PostRepository", "Fetching location for ID: $locationId")
+        return try {
+            val doc = firestore.collection("location")
+                .document(locationId)
+                .get()
+                .await()
+            Log.d("PostRepository", "Firestore doc exists: ${doc.exists()}")
+
+            val location = doc.toObject(Location::class.java)
+            Log.d("PostRepository", "Location fetched: $location")
+            location
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getPostDetails(tipId: String): PostDetails? {
         Log.d("PostRepository", "getPostDetails() STARTED with tipId: $tipId")
 
@@ -215,9 +233,12 @@ suspend fun getRandomPosts(lastDocId: String? = null, limit: Long = 10): List<Po
             val userDoc = firestore.collection("users").document(post?.userId ?: "").get().await()
             val user = userDoc.toObject(User::class.java)
 
+            val location = post?.locationId?.let { getLocationById(it) }
+            Log.d("PostRepository", "Post locationId: ${post?.locationId}")
+
             if (post != null && user != null) {
-                Log.d("PostRepository", "Post and user found for tipId: $tipId")
-                PostDetails(post = post, user = user)
+                Log.d("PostRepository", "Post and user found for location: $location")
+                PostDetails(post = post, user = user, location = location)
             } else  {
                 Log.d("PostRepository", "Post or user not found for tipId: $tipId")
                 null
