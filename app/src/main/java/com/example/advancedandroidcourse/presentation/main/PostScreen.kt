@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -17,10 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -45,6 +44,11 @@ import coil.compose.AsyncImage
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +60,9 @@ import com.example.advancedandroidcourse.presentation.location.AddPostMapView
 import com.example.advancedandroidcourse.presentation.location.LocationViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,14 +103,32 @@ fun PostScreen(
     )
     var selectedTags by remember { mutableStateOf(setOf<String>()) }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues (bottom = 16.dp)
-    ) {
-        item {
+    //Add SnackbarHost state
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val coroutineScope = rememberCoroutineScope()
+
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = Color.White,
+                    contentColor = Color.Blue
+                )
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(PaddingValues(16.dp)).padding(innerPadding),
+                //.padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues (bottom = 16.dp)
+        ) {
+            item {
             //Back button
             IconButton(onClick = onBackClick) {
                 Icon(
@@ -291,9 +316,14 @@ fun PostScreen(
                                 ) { success ->
                                     isPosting = false
                                     if (success) {
-                                        navController.navigate("home") {
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar("Tip posted successfully")
+                                            delay(1500)
+                                            navController.navigate("home") {
                                             popUpTo("home") { inclusive = true }
                                             launchSingleTop = true
+
+                                            }
                                         }
                                     }
                                 }
@@ -312,9 +342,14 @@ fun PostScreen(
                         ) { success ->
                             isPosting = false
                             if (success) {
-                                navController.navigate("home") {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Tip posted successfully")
+                                    delay(1500)
+                                    navController.navigate("home") {
                                     popUpTo("home") { inclusive = true }
                                     launchSingleTop = true
+
+                                    }
                                 }
                             }
                         }
@@ -331,6 +366,9 @@ fun PostScreen(
                     Text("Posting...", color = Color.Blue)
                 } else {
                     Text(text = stringResource(id = R.string.post), color = Color.White)
+
+                }
+
                 }
             }
         }
