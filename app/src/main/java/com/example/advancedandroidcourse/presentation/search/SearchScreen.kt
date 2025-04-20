@@ -88,7 +88,7 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
             LazyColumn(modifier = Modifier.fillMaxSize()) {
              if (searchText.isNotEmpty()) {
             items(searchResults) { tip ->
-              TipItem(tip = tip, navController = navController)//Click navigate to PostDetails Screen
+              TipItem(tip = tip, navController = navController, viewModel = viewModel)//Click navigate to PostDetails Screen
              }
 
               if (searchPerformed && searchResults.isEmpty()) {
@@ -108,7 +108,7 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
                 }
                 if (hotTips.isNotEmpty()) {
                     items(hotTips) { tip ->
-                        TipItem(tip = tip, navController = navController)
+                        TipItem(tip = tip, navController = navController, viewModel = viewModel)
                     }
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -130,7 +130,7 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
                 }
                 if (latestTips.isNotEmpty()) {
                     items(latestTips) { tip ->
-                        TipItem(tip = tip, navController = navController)
+                        TipItem(tip = tip, navController = navController, viewModel = viewModel)
                     }
                 } else {
                     item {

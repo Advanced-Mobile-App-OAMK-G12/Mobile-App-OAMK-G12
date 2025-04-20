@@ -9,6 +9,7 @@ import com.example.advancedandroidcourse.data.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +35,10 @@ class SearchViewModel @Inject constructor(
     private val _searchPerformed =MutableStateFlow(false)
     val searchPerformed: StateFlow<Boolean> = _searchPerformed
 
+    private val _userProfiles = MutableStateFlow<Map<String, Pair<String, String>>>(emptyMap())// new one
+    val userProfiles: StateFlow<Map<String, Pair<String, String>>> = _userProfiles
+
+
     init {
         fetchTips()
     }
@@ -56,6 +61,19 @@ class SearchViewModel @Inject constructor(
                 _isLoading.value = false
             }
 
+        }
+    }
+
+    fun loadUserInfoIfNeeded(userId: String) {
+        viewModelScope.launch {
+            if (!_userProfiles.value.containsKey(userId)) {
+                try {
+                    val (avatar, name) = repository.getUserInfo(userId)
+                    _userProfiles.update { it + (userId to (avatar to name)) }
+                } catch (e: Exception) {
+                    _userProfiles.update { it + (userId to ("" to "Unknown")) }
+                }
+            }
         }
     }
 
