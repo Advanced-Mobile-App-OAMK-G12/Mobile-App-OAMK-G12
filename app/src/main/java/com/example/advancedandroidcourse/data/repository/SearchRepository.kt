@@ -54,6 +54,17 @@ class SearchRepository @Inject constructor() {
         }
     }
 
+    suspend fun getUserInfo(userId: String): Pair<String, String> {
+        return try {
+            val snapshot = db.collection("users").document(userId).get().await()
+            val avatar = snapshot.getString("image") ?: ""
+            val name = snapshot.getString("name") ?: "Unknown"
+            avatar to name
+        } catch (e: Exception) {
+            "" to "Unknown"
+        }
+    }
+
     suspend fun searchTips(query: String): List<Tip> {
         return try {
             val result = db.collection("tips")
