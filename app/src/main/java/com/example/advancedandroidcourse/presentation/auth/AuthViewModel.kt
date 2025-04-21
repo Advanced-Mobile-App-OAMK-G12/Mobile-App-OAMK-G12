@@ -58,8 +58,20 @@ class AuthViewModel @Inject constructor(
             _authState.value = AuthState.Error("Email or password can't be empty")
             return
         }
+
+        val emailPattern = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
+        if (!email.matches(emailPattern)) {
+            _authState.value = AuthState.Error("Please enter a valid email address.")
+            return
+        }
+
         if (password != confirmPassword) {
             _authState.value = AuthState.Error("Passwords do not match.")
+            return
+        }
+        val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")
+        if (!password.matches(passwordPattern)) {
+            _authState.value = AuthState.Error("Password must be at least 8 characters long and include both letters and numbers.")
             return
         }
 
