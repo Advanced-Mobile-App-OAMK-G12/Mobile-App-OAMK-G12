@@ -28,6 +28,7 @@ fun NotificationItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onTipClick(notification.comment.tipId) }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -74,8 +75,7 @@ fun NotificationItem(
             contentDescription = "Tip Thumbnail",
             modifier = Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { onTipClick(notification.comment.tipId) },
+                .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
         )
     }
